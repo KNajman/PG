@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="cs">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Počítačová grafika - souborové formáty</title>
+
+		<meta name="description" content="Parametrické křivky">
+		<meta name="author" content="Jiří Hnídek">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!-- Analytics -->
+		<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		ga('create', 'UA-52302083-5', 'auto');
+		ga('send', 'pageview');
+		</script>
+		<!-- End Analytics -->
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Parametrické křivky</h1>
+					<h3>Kurz počítačové grafiky</h3>
+					<p>
+						<small>Autor: <a href="http://jirihnidek.github.io">Jiří Hnídek</a> / <a href="mailto:jiri.hnidek@tul.cz">jiri.hnidek@tul.cz</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>Motivace aneb využití křivek</h2>
+					<ul>
+						<li>Fonty</li>
+						<li>Animace (animační křivky)</li>
+						<li>Grafický design (loga, ikonky, atd.)</li>
+					</ul>
+				</section>
+
+				<section>
+					<section>
+						<h2>Křivky (Curves)</h2>
+						<blockquote>
+							&ldquo;Curve need not to be curved!&rdquo;
+						</blockquote>
+					</section>
+					<section>
+						<h3>Vyjádření křivek</h3>
+						<div style="width: 100%; overflow: hidden;">
+						<div style="float: left; width: 50%;">
+						<ul>
+							<li>
+								Explicitní vyjádření (funkce):
+								$$
+								y = f(x)
+								$$
+							</li>
+							<li>
+								Implicitní vyjádření:
+								$$
+								F(x,y) = 0
+								$$
+							</li>
+							<li>
+								Parametrické vyjádření:
+								$$
+								\begin{align}
+								x &= x(t) \\
+								y &= y(t) \quad 0 \leq t \leq 1 \\
+								z &= z(t) \\
+								\end{align}
+								$$
+							</li>
+						</ul>
+						</div>
+						<div style="float: left; width: 50%;">
+						<ul style="list-style: none;">
+							<li>
+								<div class="fragment">
+									Příklad:
+									$$
+									y = x^{2}
+									$$
+								</div>
+							</li>
+							<li>
+								<div class="fragment">
+									Příklad:
+									$$
+									x^{2} + y^{2} - 1 = 0
+									$$
+								</div>
+							</li>
+							<li>
+								<div class="fragment">
+									Příklad:
+									$$
+									\begin{align}
+									x &=  2t + 1 \\
+									y &= -1t + 2 \\
+									z &=  3t - 4 \\
+									\end{align}
+									$$
+								</div>
+							</li>
+						</ul>
+						</div>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Úsečka</h3>
+						<blockquote>
+							&ldquo;
+							One ring to rule them all,<br/>
+							one ring to find them, <br/>
+							one ring to bring them all, <br/>
+							and in the darkness bind them
+							&rdquo;
+						</blockquote>
+					</section>
+					<section>
+						<h3>Lomená čára</h3>
+						V počítačové grafice je často nezbytné křivku převést na sadu úseček, protože úsečku je jednoduché rasterizovat (zobrazit na monitoru).
+					</section>
+					<section>
+						<h3>Přímka a úsečka</h3>
+						<p>Úsečka leží na přímce, kterou můžeme vyjádřit pomocí:</p>
+						$$
+						y = kx + q
+						$$
+					</section>
+					<section>
+						<h3>Rasterizaci úsečky</h3>
+						<p>Úsečka je část přímky, která je jednoznačně určena body $ P_{1} = [x_{1}, y_{1}]$ a $ P_{2} = [x_{2}, y_{2}] $. Směrnice přímky je:</p>
+						$$
+						k = \frac{\Delta y}{\Delta x} = \frac{y_{2} - y_{1}}{x_{1} - x_{2}}
+						$$
+						<p>Pro osmispojitou úsečku s tloušťkou jedna a rezignací na antialiasing lze použít například algoritmus DDA (Digital Differential Analyzer)</p>
+					</section>
+					<section>
+						<h3>Algoritmus DDA</h3>
+						<p>Varianta algoritmu pro $ k < 1 $:</p>
+						<pre><code>
+var k = (y2 - y1)/(x2 - x1);
+var x = x1;
+var y = y1;
+while(x < x2) {
+	draw(x, y);
+	x += 1;
+	y += k;
+}
+						</code></pre>
+					</section>
+					<section>
+						<h3>Tlouťka, antialising, přerušování, ukončení</h3>
+						<p>V praxi je často nutné vykreslovat úsečku jako geometrický útvar (nejčastěji obdelník) a řešit další netriviální problémy.</p>
+						<p class="fragment">Naštěstí existuje spousta knihoven a API (HTML5 Canvas, WebGL, atd.), které tyto problémy řeší za nás.</p>
+					</section>
+					<section>
+						<h2>Úsečka a HMTL5 - Canvas</h2>
+						<p>Úsečku můžeme do canvasu vykreslit jednoduše pomocí následujícího kódu v Javascriptu.</p>
+						<div style="width: 100%; overflow: hidden;">
+						<div style="float: left; width: 70%;">
+							<pre><code data-trim>
+var canvas = document.getElementById('myCanvas');
+var ctx = canvas.getContext('2d');
+ctx.beginPath();
+ctx.moveTo(150, 100);
+ctx.lineTo(390,170);
+ctx.lineWidth = 10;
+ctx.strokeStyle = 'white';
+ctx.lineCap = 'round';
+ctx.stroke();
+							</code></pre>
+						</div>
+						<div style="float: left; width: 30%;">
+							<canvas id="myCanvas01" width="400" height="300"></canvas>
+							<script type="text/javascript">
+							var canvas = document.getElementById('myCanvas01');
+							var ctx = canvas.getContext('2d');
+							ctx.beginPath();
+							ctx.moveTo(20, 50);
+							ctx.lineTo(250, 200);
+							ctx.lineWidth = 10;
+							ctx.strokeStyle = 'white';
+							ctx.lineCap = 'round';
+							ctx.stroke();
+							</script>
+						</div>
+						</div>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Parametrické vyjádření křivky</h2>
+						<ul>
+							<li>
+								Bodová rovnice:
+								$$
+								Q(t) = [x(t), y(t), z(t)] \quad 0 \leq t \leq 1
+								$$
+							</li>
+							<li>
+								Polohový vektor:
+								$$
+								\begin{align}
+								\vec{q(t)} &= (x(t), y(t), z(t)) = \\
+								           &= Q(t) = [0, 0, 0] \quad 0 \leq t \leq 1
+								\end{align}
+								$$
+							</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Výhody parametrického vyjádření křivek</h2>
+						<p>Oproti funkcím může křivka protínat samu sebe, může se uzavřít, může být rovnoběžná s libovolnou osou, apod.</p>
+						<p>Parametr $ t $ můžeme chápat jako čas.</p>
+						<p>Lze je používat jak ve 2D, tak i v 3D prostoru.</p>
+					</section>
+				</section>
+
+				<section>
+					<h2>Tečný vektor</h2>
+					<ul>
+						<li>
+							Tečný vektor v bodě $ Q(t_{0}) $:
+							$$
+							\begin{align}
+							\vec{q(t_{0})} &= (x(t_{0})^{\prime}, y(t_{0})^{\prime}, z(t_{0})^{\prime}) = \\
+							               &= \left( \frac{dx(t_{0})}{dt}, \frac{dy(t_{0})}{dt}, \frac{dz(t_{0})}{dt} \right) \\
+							\end{align}
+							$$
+						</li>
+						<li>Důležité po navazování křivek a skládání křivek z menších segmentů</li>
+					</ul>
+				</section>
+
+				<section>
+					<section>
+						<h2>Spojitost</h2>
+						<img src="./img/curve_continuity.svg" alt="Continuity of two curves" title="Continuity of two curves" style="background: white;" width="75%">
+					</section>
+					<section>
+						<h3>Parametrická spojitost</h3>
+						<p>Říkáme, že křivku $ Q(t) $ nazýváme parametricky spojitou $ C^{n} $, pokud ve všech jejích bodech existuje derivace stupně $ n $ </p>
+					</section>
+					<section>
+						<h3>Geometrická spojitost</h3>
+						<p>Dvě křivky $ Q_{1} $ a $ Q_{2} $ jsou geometricky spojité $ G^{n} $ ve společném bodě, pokud je zaručeno:</p>
+						$$
+							q_{1}^{(n)} = k q_{2}^{(n)}; \quad k > 0
+						$$
+						<p>Jinými slovy pro $ G^{1} $ není potřeba rovnost tečných vektorů, ale pouze rovnost tečen v daném bodě.</p>
+						<p class="fragment"><i>Je-li křivka $ C^{1} $ je potom i $ G^{1} $ spojitá?</i></p>
+						<p class="fragment"><i>Ano, je-li křivka $ C^{n} $ tak je potom automaticky i $ G^{n} $ spojitá.</i></p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Modelování křivek</h2>
+						<blockquote>
+							&ldquo;Polynoms rule the world of parametric curves&rdquo;
+						</blockquote>
+					</section>
+					<section>
+						<h3>Polynomiální křivky</h3>
+						<div>
+							$$
+							Q(t) = a_{0} + a_{1}t + a_{2}t^{2} + \dots + a_{n}t^{n}
+							$$
+						</div>
+						<div class="fragment" style="padding-top: 15px;">
+							$$
+							\begin{pmatrix}
+							x(t)\\
+							y(t)\\
+							z(t)\\
+							\end{pmatrix} =
+							\begin{pmatrix}
+							a_{x0}\\
+							a_{y0}\\
+							a_{z0}\\
+							\end{pmatrix} +
+							\begin{pmatrix}
+							a_{x1}\\
+							a_{y1}\\
+							a_{z1}\\
+							\end{pmatrix}t +
+							\dots +
+							\begin{pmatrix}
+							a_{xn}\\
+							a_{yn}\\
+							a_{zn}\\
+							\end{pmatrix}t^{n}
+							$$	
+						</div>
+					</section>
+					<section>
+						<h3>Vlastnosti polynomiálních křivek</h3>
+						<ul>
+							<li>Jednoduchý výpočet</li>
+							<li>Snadno diferencovatelné (tečné vektory)</li>
+							<li>Používají se křivky po částech polynomiální</li>
+							<li>Nejčastěji se používají kubiky</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Často požadované vlastnosti křivek</h3>
+						<ul>
+							<li>Invariace vůči lineárním transformacím a projekcím</li>
+							<li>Křivka leží uvnitř konvexní obálce všech svých řídících bodů</li>
+							<li>Lokalita změn polohy/váhy řídícího bodu (křivky po částech polynomiální)</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Kubiky</h2>
+						<p>Parametrické vyjádření kubik má následující tvar:</p>
+						$$
+						\begin{align}
+						x(t) &= a_{x}t^{3} + b_{x}t^{2} + c_{x}t + d_{x} \\
+						y(t) &= a_{y}t^{3} + b_{y}t^{2} + c_{y}t + d_{y} \\
+						z(t) &= a_{z}t^{3} + b_{z}t^{2} + c_{z}t + d_{z}
+						\end{align}
+						$$
+					</section>
+					<section>
+						<h3>Maticové vyjádření</h3>
+						$$
+						Q(t) =
+						\begin{bmatrix}
+						x(t) \\
+						y(t) \\
+						z(t) \\
+						\end{bmatrix} =
+						T.C = 
+						\begin{bmatrix}
+						t^3 & t^2 & t & 1
+						\end{bmatrix}
+						\begin{bmatrix}
+						a_{x} & a_{y} & a_{z} \\
+						b_{x} & b_{y} & b_{z} \\
+						c_{x} & c_{y} & c_{z} \\
+						d_{x} & d_{y} & d_{z} \\
+						\end{bmatrix}
+						$$
+					</section>
+					<section>
+						<p>Matici $ C $ můžeme vyjádřit: $ C = MG $ </p>
+						$$
+						\begin{bmatrix}
+						a_{x} & a_{y} & a_{z} \\
+						b_{x} & b_{y} & b_{z} \\
+						c_{x} & c_{y} & c_{z} \\
+						d_{x} & d_{y} & d_{z} \\
+						\end{bmatrix} =
+						\begin{bmatrix}
+						m_{11} & m_{12} & m_{13} & m_{14} \\
+						m_{21} & m_{22} & m_{23} & m_{24} \\
+						m_{31} & m_{32} & m_{33} & m_{34} \\
+						m_{41} & m_{42} & m_{43} & m_{44} \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						G_{1} \\
+						G_{2} \\
+						G_{3} \\
+						G_{4} \\
+						\end{bmatrix}
+						$$
+						<p>kde $ M $ se nazývá bázová matice (určuje druh křivky) a $ G $ je vektor geometrických podmínek (řídící body a vektory)</p>
+					</section>
+					<section>
+						<p>Výsledný podoba maticového vyjádření:</p>
+						$$
+						Q(t) =
+						\begin{bmatrix}
+						t^3 & t^2 & t & 1
+						\end{bmatrix}
+						\begin{bmatrix}
+						m_{11} & m_{12} & m_{13} & m_{14} \\
+						m_{21} & m_{22} & m_{23} & m_{24} \\
+						m_{31} & m_{32} & m_{33} & m_{34} \\
+						m_{41} & m_{42} & m_{43} & m_{44} \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						G_{1} \\
+						G_{2} \\
+						G_{3} \\
+						G_{4} \\
+						\end{bmatrix}
+						$$
+					</section>
+					<section>
+						<h3>Bázové polynomy</h3>
+						$$
+						\begin{align}
+						Q(t) = & (m_{11}t^{3} + m_{21}t^{2} + m_{31}t + m_{41})G_{1} + \\
+						       & (m_{12}t^{3} + m_{22}t^{2} + m_{32}t + m_{42})G_{2} + \\
+						       & (m_{13}t^{3} + m_{23}t^{2} + m_{33}t + m_{43})G_{3} + \\
+						       & (m_{14}t^{3} + m_{24}t^{2} + m_{34}t + m_{44})G_{4} \\
+						\end{align}
+						$$
+						<p>Určují váhu jednotlivých řídících bodů/vektorů pro různé hodnoty $ t \in \langle 0, 1 \rangle $</p>
+					</section>
+					<section>
+						<h3>Jednoduchý příklad bázových polynomů</h3>
+						<p>Mějme křivku, která je určena body $ P_{1} $ a $ P_{2} $:</p>
+						$$
+						Q(t) = (1 - t)P_{1} + tP_{2} \quad 0 \leq t \leq 1
+						$$
+						<p class="fragment"><i>O jakou křivku se jedná?</i></p>
+						<p class="fragment"><i>Je to úsečka s krajními body $ P_{1} $ a $ P_{2} $.</i></p>
+					</section>
+				</section>
+
+				<section>
+					<h2>Interpolační a aproximační křivky</h2>
+					<p class="fragment">Interpolační křivky procházejí všemi řídícími body.</p>
+					<p class="fragment">Aproximační křivky nemusí procházet žádným ze svých řídící bodů.</p>
+				</section>
+
+				<section>
+					<h2>Interpolační křivky</h2>
+					<p>Patří mezi ně například Hermitovské kubiky nebo TCB křivky, ale v praxi se příliš npoužívají</p>
+				</section>
+
+				<section>
+					<h2>Aproximační křivky</h2>
+					<p>Ty se v počítačové grafice používají naopak velmi často. Patří mezi ně především Bézierovy kubyky, B-Spline křivky a konečně NURBs křivky</p>
+				</section>
+
+				<section>
+					<section>
+						<h2>Bézierovy křivky</h2>
+						<blockquote>
+							&ldquo;Aproximate or interpolate? That's the question!&rdquo;
+						</blockquote>
+					</section>
+					<section>
+						<h3>Bézierova křivka n-tého stupně</h3>
+						<p>Je dána vztahem:</p>
+						$$
+						Q(t) = \sum_{i=0}^{n} P_{i} B_{i}^{n}(t); \quad t \in \langle 0, 1 \rangle
+						$$
+						<p>kde $ P_{i} $ je <i>i-tý</i> řídící bod a $ B_{i}^{n}(t) $ je Bernsteinův polynom n-tého stupně</p>
+						$$
+						B_{i}^{n}(t) = \binom{n}{i} t^{i} (1 - t)^{n-i}; \quad i = 0, 1, \dots, n
+						$$
+					</section>
+					<section>
+						<h3>Vlastnosti Bézierovy křivky</h3>
+						<ul>
+							<li>Křivka prochází prvním a posledním řídícím bodem</li>
+							<li>Křivka leží uvnitř ohraničující obálky, která je určena řídícimi body</li>
+							<li>Při změně polohy jednoho řídícího bodu, dojde ke změně celé křivky</li>
+							<li>Nejčastěji se používají kubiky, které se na sebe navazují</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Tečné vektory v koncových bodech</h3>
+						$$
+						\begin{align}
+						\vec{q^{\prime}}(0) &= n(P_{1} - P_{0}) \\
+						\vec{q^{\prime}}(1) &= n(P_{n} - P_{n-1}) \\
+						\end{align}
+						$$
+					</section>
+					<section>
+						<h3>Spojitost dvou Bézierových křivek</h3>
+						<p>Mějme dvě Bézierovy křivky $ Q_{1}(t) $ a $ Q_{2}(t) $ </p>
+						<ul>
+							<li>Křivky mají spojitost $ C^{0} $, pokud
+							$$
+							Q_{1}(1) = Q_{2}(0)
+							$$
+							</li>
+							<li>Křivky mají spojitost $ C^{1} $, pokud
+							$$
+							(P_{n-1} - P_{n}) = (R_{0} - R_{1})
+							$$
+							</li>
+							<li>
+							Křivky mají spojitost $ G^{1} $, pokud
+							$$
+							(P_{n-1} - P_{n}) = k(R_{0} - R_{1})
+							$$
+							</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Bézierovy kubiky</h2>
+					</section>
+					<section>
+						<h3>Bézierova křivka 3. stupně</h3>
+						$$
+						Q(t) = \sum_{i=0}^{3} P_{i} B_{i}(t); \quad t \in \langle 0, 1 \rangle
+						$$
+						<p>Bernstainovy polynomy 3. stupně:</p>
+						$$
+						\begin{align}
+						B_{0}(t) &= (1 - t)^{3} \\
+						B_{1}(t) &= 3t(1 - t)^{2} \\
+						B_{2}(t) &= 3t^{2}(1 - t) \\
+						B_{3}(t) &= t^{3} \\
+						\end{align}
+						$$
+					</section>
+					<section>
+						<p>Výsledná podoba bázových polynomů:</p>
+						$$
+						\begin{align}
+						Q(t) = & ( -t^{3} + 3t^{2} - 3t + 1)P_{0} + \\
+						       & ( 3t^{3} - 6t^{2} + 3t)P_{1} + \\
+						       & (-3t^{3} + 3t^{2})P_{2} \\
+						       & (t^{3})P_{3} \\
+						\end{align}
+						$$
+					</section>
+					<section>
+						<h3>Průběh bázových polynomů</h3>
+						<img src="./img/bernstein_polynoms.svg" height="50%" style="background: white;">
+					</section>
+					<section>
+						<h3>Maticový zápis Bézierovy kubiky</h3>
+						$$
+						Q(t) =
+						\begin{bmatrix}
+						t^{3} & t^{2} & t & 1 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						-1 &  3 & -3 & 1 \\
+						 3 & -6 &  3 & 0 \\
+						-3 &  3 &  0 & 0 \\
+						 1 &  0 &  0 & 0 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						P_{0} \\
+						P_{1} \\
+						P_{2} \\
+						P_{3} \\
+						\end{bmatrix}
+						$$
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Vykreslování Bézierovy křivky</h2>
+						<blockquote>
+							&ldquo;Adaptive or non-adaptive? That's the question too.&rdquo;
+						</blockquote>
+					</section>
+					<section>
+						<h3>Neadaptivní vykreslování</h3>
+						<p>Parameter $ t $ zvyšujeme o pevně daný krok (např.: $dt = 0.01$). Dostaneme množinu bodů, které spojíme lomenou čárou.</p>
+						<p class="fragment">Prvním problémem je určit, jak má být tento krok jemný.</p>
+						<p class="fragment">Druhým problémem je, že rovné části jsou často vykreslované zbytečně jemně a zakřivené části nedostatečně jemně.</p>
+					</section>
+					<section>
+						<h3>Adaptivní algoritmus de Casteljau</h3>
+						<p>Při vykreslování pomocí tohoto algoritmu se využívá dělení Bézierovy křivky na dvě části.</p>
+						<img src="./img/de_casteljau.svg" style="background: white;">
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Aproximace množiny 2D bodů metodou nejmenších čtverců</h2>
+						<img src="./img/bezier_curve_aproximate_2d_points.svg" width="50%" style="background: white;">
+					</section>
+					<section>
+						<h2>Množina 2D bodů</h2>
+						<p>Mějme množinu 2D bodů $ P^{T} = [ P_{1}, P{2}, \dots, P_{n} ]$, kde $ P_{i} = [ x_{i}, y_{i} ]$.</p>
+						<p>Následně můžeme definovat dva samostatné vektory:</p>
+						$$
+						\begin{align}
+						x^{T} &= [x_{1}, x_{2}, \dots, x_{n}] \\
+						y^{T} &= [y_{1}, y_{2}, \dots, y_{n}] \\
+						\end{align}
+						$$
+					</section>
+					<section>
+						<h2>Parametrizace aproximovaných bodů</h2>
+						<p>Pro aproximaci množiny bodů $P=[P_{1}, P_{2}, \dots, P_{n}]$ potřebujeme definovat vektor parametrů:</p>
+						$$
+						T = [t_{1}, t_{2}, \dots, t_{n}] \quad t \in <0, 1>
+						$$
+						<p>, který mapuje jednotlivé body $P_{i}$ na body Bézierovy křivky. První nástřel mapování může být vytvořen pomocí vzdálenosti boduů $P_{i}$ od počátečního bodu $P_{0}$.</p>
+					</section>
+					<section>
+						<h2>Výpočet parametrizace bodů</h2>
+						<p>Vzdálenost i-tého bodu od počátku křivky je:</p>
+						$$
+						d_{i} = \sum_{j=2}^{i}|P_{j} - P_{j-1}|
+						$$
+						<p>pak můžeme pro každý aproximovaný bod $P_{i}$ spočítat odpovídající parametr $t_{i}$:</p>
+						$$
+						t_{i} = \frac{d_{i}}{d_{n}}; \quad t_{0} = 0
+						$$
+					</section>
+					<section>
+						<h2>Chyba aproximace</h2>
+						<p>Pro výpočet aproximace metodou nejmenších čtverců potřebujeme vztah, který nám určuje celkovou chybu:</p>
+						$$
+						\begin{align}
+						E(C_{x}) &= \sum_{i=1}^{n}(x_{i} - B(t_{i}))^{2} \\
+						E(C_{y}) &= \sum_{i=1}^{n}(y_{i} - B(t_{i}))^{2} \\
+						\end{align}
+						$$
+						kde $C_{x}$ a $C_{y}$ jsou vektory x/y-ových souřadnic hledaných řídích bodů a $B(t)= T.M.C$
+					</section>
+					<section>
+						<p>Pro parametrizaci bodů $P$ si definujeme matici:</p>
+						$$
+						\Pi = 
+						\begin{bmatrix}
+						t_{1}^{3} & t_{1}^{2} & t_{1} & 1 \\
+						t_{2}^{3} & t_{2}^{2} & t_{2} & 1 \\
+						\vdots & \vdots & \vdots & \vdots \\
+						t_{n}^{3} & t_{n}^{2} & t_{n} & 1 \\
+						\end{bmatrix}
+						$$
+						<p>Předhozí vztahy pro výpočet chyby tak můžeme přepsat na:</p>
+						$$
+						E(C_{x}) = (x - \Pi M C_{x})^{T} (x - \Pi M C_{x})
+						$$
+					</section>
+					<section>
+						<p>Pro nalezení minima vztah parciálně zderivujeme podle $C_{x}$ a dáme roven nule:</p>
+						$$
+						\frac{\partial E(C_{x})}{\partial C_{x}} = -2 \Pi (x - \Pi M C_{x}) = 0
+						$$
+						<p>Výsledné vztahy mají tvar:</p>
+						$$
+						\begin{align}
+						C_{x} &= M^{-1} (\Pi^{T}\Pi)^{-1}\Pi^{T} x \\
+						C_{y} &= M^{-1} (\Pi^{T}\Pi)^{-1}\Pi^{T} y \\
+						\end{align}
+						$$
+						<p class="fragment">
+						$$
+						C_{z} = M^{-1} (\Pi^{T}\Pi)^{-1}\Pi^{T} z
+						$$
+						</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Průsečíky</h2>
+						<p>V počítačové grafice má smysl se zabývat následujícími případy</p>
+						<ul>
+							<li>Průsečík dvou 2D křivek</li>
+							<li>Průsečík 3D křivky s plochou</li>
+							<li>Průsečík dvou ploch</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Průsečík dvou 2D křivek</h2>
+						<ul>
+						<li>Snažíme se nalézt množinu bodů (průsečíků)</li>
+						<li>Pokud je možné křivky vyjádřit jako dvě funkce: $ y = f_{1}(x) $ a $ y = f_{2}(x) $, tak na výsledek nalezneme řešením rovnice: $ f_{1}(x) - f_{2}(x) = 0 $.</li>
+						<li>Pokud jsou obě křivky vyjádřeny implicitně: $ f_{1}(x,y) = 0 $ a $ f_{2}(x,y) = 0 $, tak jejich průsečíky můžme nalézt vyřešením soustavy rovnic.</li>
+						<li>Pokud je jedna křivka vyjádřena implicitně: $ f(x,y) = 0 $ a druhá parametricky: $ x = x(t), y=y(t)$, tak řešení je: $f(x(t), y(t)) = 0 $ </li>
+						</ul>
+					</section>
+					<section>
+						<h2>Průsečík Bézierovy křivky s přímkou</h2>
+						<p>Implicitní vyjádření přímky: $ y - kx - q = 0$</p>
+						<p>Parametrické vyjádření Bézierovy křivky:</p>
+						$$
+						\begin{align}
+						x &= a_{x}t^{3} + b_{x}t^2 + c_{x}t + d_{x} \\
+						y &= a_{y}t^{3} + b_{y}t^2 + c_{y}t + d_{y}
+						\end{align}
+						$$
+						<p>Obecné rovnice má tvar:</p>
+						$$
+						(a_{y} - ka_{x})t^{3} + (b_{y} - kb{x})t^{2} + (c_{y} - kc_{y})t \\ + (d_{y} - kd_{x} - q) = 0
+						$$
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Bézierovy kubiky a HMTL5 - Canvas</h2>
+						<div style="width: 100%; overflow: hidden;">
+						<div style="float: left; width: 70%;">
+							<pre><code data-trim>
+var canvas = document.getElementById('myCanvas');
+var ctx = canvas.getContext('2d');
+ctx.beginPath();
+ctx.moveTo(150, 100);
+ctx.bezierCurveTo(140,10, 390,10, 390,170);
+ctx.lineWidth = 10;
+ctx.strokeStyle = 'white';
+ctx.lineCap = 'round';
+ctx.stroke();
+							</code></pre>
+						</div>
+						<div style="float: left; width: 30%;">
+							<canvas id="myCanvas02" width="400" height="200"></canvas>
+							<script type="text/javascript">
+							var canvas = document.getElementById('myCanvas02');
+							var ctx = canvas.getContext('2d');
+							ctx.beginPath();
+							ctx.moveTo(20, 100);
+							ctx.bezierCurveTo(140,10, 240,10, 240,190);
+							ctx.lineWidth = 10;
+							ctx.strokeStyle = 'white';
+							ctx.lineCap = 'round';
+							ctx.stroke();
+							</script>
+						</div>
+						</div>
+					</section>
+					<section>
+						<h3>Canvas &amp; Bézier &amp; spol.</h3>
+						<ul>
+							<li>lineTo() vykreslí úsečku</li>
+							<li>arc() vykreslí kruhovou výseč</li>
+							<li>quadraticCurveTo() vykreslí Bézierovu křivku 2. řádu</li>
+							<li>bezierCurveTo() vykreslí Bézierovu kubiky</li>
+							<li>beginPath() umožňuje navazovat křivky</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Bézierovy kubiky a HTML5 - SVG</h2>
+						<pre><code contenteditable>
+<svg width="360" height="280" id="svg2">
+  <defs id="defs7035" />
+  <g transform="translate(0,-772.36218)" id="layer1">
+    <path d="m 40,910 c 200,-220 260,-40 280,120" id="path7045" />
+  </g>
+</svg>
+						</code></pre>
+					</section>
+					<section>
+						<h3>SVG - příklad</h3>
+						<pre><code>
+<img src="./curve.svg">
+						</code></pre>
+						<img src="./img/bezier_curve.svg" style="border: none; background: none;">
+					</section>
+					<section>
+						<h3>SVG &amp; Javascript</h3>
+						<ul>
+							<li><a href="http://raphaeljs.com/">raphaeljs.com</a></li>
+							<li><a href="http://www.learnsvg.com/">www.learnsvg.com</a></li>
+							<li><a href="http://svgdiscovery.com/">svgdiscovery.com</a></li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Coonsovy kubiky</h2>
+						<p>Označována také uniformní racionální B-spline, zkráceně B-spline a je důležitým mezikrokem k pochopení NURBS křivek a NURBS ploch</p>
+					</section>
+					<section>
+						<h3>Konstrukce Coonsovy kubiky z řídících bodů</h3>
+						<img src="./img/coons_curve.svg" alt="Coons curve" title="Coons curve" style="background: #fff;" width="75%">
+					</section>
+					<section>
+						<h2>Výpočet Coonsovy kubiky</h2>
+						<p>Je určena 4 řídícími body: $P_{0}$, $P_{1}$, $P_{2}$, $P_{3}$ a vztahem:</p>
+						$$
+						Q(t) = \frac{1}{6}
+						\begin{bmatrix}
+						t^{3} & t^{2} & t & 1
+						\end{bmatrix}
+						\begin{bmatrix} 
+						-1 &  3 & -3 & 1 \\
+						 3 & -6 &  3 & 0 \\
+						-3 &  0 &  3 & 0 \\
+						 1 &  4 &  1 & 0
+						\end{bmatrix}
+						\begin{bmatrix}
+						P_{0} \\
+						P_{1} \\
+						P_{2} \\
+						P_{3} \\
+						\end{bmatrix}
+						$$
+					</section>
+					<section>
+						<h3>Bázové polynomy Coonsovy kubiky</h3>
+						<img src="./img/bspline_polynoms.svg" style="background: white;">
+					</section>
+					<section>
+						<h2>Počáteční a koncový bod</h2>
+						<ul>
+							<li>
+								Počáteční bod leží v anitěžišti trojúhelníku tvořeného prvními třemi body ($P_{0}$, $P_{1}$, $P_{2}$), což lze jednoduše vyjádřit vztahem:
+								<div style="padding-top: 20px; padding-bottom: 20px;">
+								$$
+								Q(0) = \frac{P_{0} + 4P_{1} + P_{2}}{6}
+								$$
+								</div>
+							</li>
+							<li>
+								Koncový bod leží naopak v anitěžišti trojúhelníku tvořeného posledními třemi body ($P_{1}$, $P_{2}$, $P_{3}$), což lze vyjádřit:
+								<div style="padding-top: 20px;">
+								$$
+								Q(1) = \frac{P_{1} + 4P_{2} + P_{3}}{6}
+								$$
+								</div>
+							</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Tečné vektory</h2>
+						<ul>
+							<li>
+								Tečný vektor v počátečním bodu:
+								<div style="padding-top: 20px; padding-bottom: 20px;">
+								$$
+								q_{0}^{\prime} = \frac{P_{2} - P_{0}}{2}
+								$$
+								</div>
+							</li>
+							<li>
+								Tečný vektor v koncovém bodu:
+								<div style="padding-top: 20px; padding-bottom: 20px;">
+								$$
+								q_{1}^{\prime} = \frac{P_{3} - P_{1}}{2}
+								$$
+								</div>
+							</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<h2>Uniformní kubický B-spline</h2>
+					<p>Vzniká navazováním Coonsových kubik na sebe. Poslední tři řídící body jednoho segmentu jsou první tři řídíci body následujícího segmentu.</p>
+					<p>Pokud máme v nějaké části křivky trojnásobný bod (tři body leží na sobě), tak křivka tímto bodem prochází.</p>
+					<p>Uzlový vektor určuje hodnoty parametru $ t $ v uzlových bodech, přičemž platí $ t_{i+1} - t = c$</p>
+				</section>
+
+				<section>
+					<section>
+						<h2>NURBS</h2>
+						<blockquote>
+							&ldquo;Non Uniform Rational B-spline! What?!&rdquo;
+						</blockquote>
+					</section>
+					<section>
+						<h3>NURBS křivky</h3>
+						<ul>
+							<li>Zobecněním uniformních kubických B-splinů</li>
+							<li><i>Neuniformita</i> říká, že vzdálenost uzlů (koncových bodů segmentů), ve smyslu parametru t, nemusí být konstantní: $ t_{i+1} - t_{i} \neq c$</li>
+							<li><i>Racionalita</i> říká, že řídící body jsou dány svými homogeními souřadnicemi.</li>
+							<li>NURBs křivka je tedy určena $ n + 1 $ řídícími body $ P_{i}; i = 0, 1, \dots, n $, řádem B-spline $ k $ a uzlovým vektorem $ U $ délky $ n + k + 1$.</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Výpočet NURBs</h3>
+						<p>NURBs křivka je dána následujícím vztahem:</p>
+						$$
+						Q(t) = \frac{\sum_{i=0}^{n}w_{i}P_{i}N_{i,k}(t)}{\sum_{i=0}^{n}w_{i}N_{i,k}(t)}
+						$$
+						kde $ w_{i} $ je váha i-tého bodu a $ N_{i,k}(t) $ jsou normalizované B-spline bázové funkce.
+					</section>
+					<section>
+						<h3>Bázové funkce</h3>
+						<p>Jsou definované následujícím rekurentním vztahem:</p>
+						$$
+						N_{i,1} =
+						\begin{cases}
+						1; &\quad t_{i} \leq t \le t_{i+1} \\
+						0; &\quad \text{otherwise}
+						\end{cases}
+						$$
+						$$
+						N_{i,k} =
+						\frac{t - t_{i}}{t_{i+k-1} - t_{i}}N_{i,k-1}(t) +
+						\frac{t_{i+k} - t}{t_{i+k} - t_{i+1}}N_{i+1,k-1}(t)
+						$$
+						<p>Předchozí vztah platí pro:</p>
+						$$
+						t_{i} \le t_{i+1+k}; 0 \leq i \leq n
+						$$
+						<p>Pokud se ve jmenovateli vyskytuje nula, tak výsledná hodnota je v tomto případě rovna nule.</p>
+					</section>
+					<section>
+						<h3>Využití NURBs</h3>
+						<p>Především NURBs plochy se používají v CAD/CAM aplikacích.</p>
+					</section>
+					<section>
+						<h3>NURBs a Web</h3>
+						<p>B-spline nebo NURBs není podporováno v SVG ani v Canvasu. Je nutné použít externí knihovnu.</p>
+						<a href="http://verbnurbs.com/">verbnurbs.com</a>
+					</section>
+				</section>
+
+				<section>
+					<h2>Děkuji za pozornost!</h2>
+					<h3 class="fragment">Nějaké dotazy?</h3>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				math: {
+					mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js', //'/plugin/math/MathJax.js',
+					config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
+				},
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

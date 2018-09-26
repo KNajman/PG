@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="cs">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Počítačová grafika - souborové formáty</title>
+
+		<meta name="description" content="Souborové formáty používané v počítačové grafice">
+		<meta name="author" content="Jiří Hnídek">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!-- Analytics -->
+		<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		ga('create', 'UA-52302083-5', 'auto');
+		ga('send', 'pageview');
+		</script>
+		<!-- End Analytics -->
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Reprezentace 3D objektů</h1>
+					<h3>Kurz počítačové grafiky</h3>
+					<p>
+						<small>Autor: <a href="http://jirihnidek.github.io">Jiří Hnídek</a> / <a href="mailto:jiri.hnidek@tul.cz">jiri.hnidek@tul.cz</a></small>
+					</p>
+				</section>
+				<section>
+					<h2>Základní dělení</h2>
+					<ul>
+						<li>Hraniční reprezentace</li>
+						<ul>
+							<li>Plošková reprezentace</li>
+							<li>Bodová reprezentace</li>
+							<li>Konstruktivní geometrie těles</li>
+						</ul>
+						<li>Objemová reprezentace</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Plošková reprezentace</h2>
+					<p>Nejčastější způsob uložení 3D objektů v paměti i na disku. Nezajímá nás vnitřek objektu, ale pouze to, co je na povrchu.</p>
+					<p>Povrch je složen z:</p>
+					<ul>
+						<li>Vertexy (3D souřadnice krajních bodů)</li>
+						<li>Hrany (spojení dvou vertexů)</li>
+						<li>Plošky (spojení alespoň tří vertexů)</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Trojúhelník &amp; N-úhelník</h2>
+					<p>Síť n-úhelníků se nakonec v zobrazovacím řetězci vždy převádí na śíť trojúhelníků, protože trojúhelník má několik důležitých vlastností.</p>
+					<ul>
+						<li>Všechny jeho body leží v jedné rovině.</li>
+						<li>Trojúhelník je vždy konvexní.</li>
+						<li>Lze jednoduše a jednoznačně spočítat jeho normálový vektor z jeho krajních bodů.</li>
+						<li>Lze jednoduše provádět jeho rasterizaci.</li>
+					</ul>
+				</section>
+				<section>
+					<section>
+						<h2>Síť trojúhelníků</h2>
+						<p>Síť trojúhelníků i libovolných n-úhelníků má vždy dvě části:</p>
+						<p style="text-align: left;"><b>Geometrická struktura</b></p>
+						<ul>
+							<li>Obsahuje pouze souřadnice vertexů</li>
+						</ul>
+						<p style="text-align: left;"><b>Topologická struktura</b></p>
+						<ul>
+							<li>Obsahuje informace o tom, jak jsou vertexy pospojovány do hran a plošek.</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<h2>Optimalizace sítě trojúhelníků</h2>
+					<p>Síť je někdy vhodné převést na pruh trojúhelníků nebo vějíř trojúhelníků</p>
+					<ul>
+						<li>Není nutné přenášet takové množství dat na grafický akcelerátor</li>
+						<li>Nutná podpora na grafickém akcelátoru a použitém API (OpenGL, WebGL, atd.)</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Manifoldní a non-manifoldní objekty</h2>
+					<p>Manifoldní objekt je tzv. vyrobitelný objekt a jeho topologická struktura musí splňovat následující 3 podmínky:</p>
+					 <ol>
+					 	<li>Každá hrana musí být sdílena pouze dvěma ploškami.</li>
+					 	<li>Žádná hrana neprotíná jinou plošku.</li>
+					 	<li>Žádný vertex nespojuje dvě části objektu.</li>
+					 </ol>
+				</section>
+				<section>
+					<section>
+						<h2>Jednoduchá plošková reprezentace těles</h2>
+						<ul>
+							<li>Předpokladem je uložení objektu, který splňuje alespoň některá kritérie pro manifoldní objekt.</li>
+							<li>Obsahuje informace pouze o poloze vertexů a jejich propojení do plošek.</li>
+							<li>Tato struktura je vhodná pro uložení do souboru, případně paměti.</li>
+							<li>Je hrubě nevhodná pro úpravu geometrické/topologické struktury.</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Příklad - Krychlička</h3>
+						<pre><code>
+				   4+----+7
+				   /|   /|
+				 5+----+6|
+				  | |  | |
+				  |0+--|-+3
+				  |/   |/
+				 1+----+2
+						</code></pre>
+					</section>
+					<section>
+						<h3>Příklad sítě trojúhelníků</h3>
+						<h4>Geometrická struktura - vetexy</h4>
+						<table>
+							<tr>
+								<td>0.0, 0.0, 0.0</td>
+								<td>1.0, 0.0, 0.0</td>
+								<td>1.0, 1.0, 0.0</td>
+								<td>0.0, 1.0, 0.0</td>
+								<td>0.0, 0.0, 1.0</td>
+								<td>1.0, 0.0, 1.0</td>
+								<td>1.0, 1.0, 1.0</td>
+								<td>0.0, 1.0, 1.0</td>
+							</tr>
+						</table>
+						<h4>Topologická struktura - plošky</h4>
+						<table>
+							<tr>
+								<td>0, 3, 2, 1</td>
+								<td>0, 1, 5, 4</td>
+								<td>1, 2, 6, 5</td>
+								<td>2, 3, 7, 6</td>
+								<td>3, 0, 4, 7</td>
+								<td>4, 5, 6, 7</td>
+								<td>4, 5, 9, 8</td>
+							</tr>
+						</table>
+					</section>
+				</section>
+				<section>
+					<h2>Normálový vektor</h2>
+					<p>Normálový vektor plošky lze jednoznačně spočítat ze souřadnic krajních vertexů.</p>
+					<p>Když budeme uvažovat trojúhelník s krajními body: $P_{1} = [x_{1}, y_{1}, z_{1}]$, $P_{2} = [x_{2}, y_{2}, z_{2}]$ a $P_{3} = [x_{3}, y_{3}, z_{3}]$, tak normálový vektor $\vec{n}$ můžeme spočítat pomocí:</p>
+					$$
+						\vec{v_{21}} = P_{2} - P_{1}; \quad \vec{v_{32}} = P_{3} - P_{2} \\
+						\vec{n} = \vec{v_{21}}  \vec{v_{32}}
+					$$
+				</section>
+				<section>
+					<section>
+						<h2>Datová struktura okřídlené hrany</h2>
+						<ul>
+							<li>Datová struktura vhodná pro dynamickou úpravu geometrie a topologie.</li>
+							<li>Lze ji použít pouze pro uložení manifoldních objektů.</li>
+							<li>Obsahuje jednak geometrickou strukturu (vertexy).</li>
+							<li>Většina informací o topologii je uložena na hranách.</li>
+							<ul>
+								<li>Dva odkazy na oba vertexy</li>
+								<li>Dva odkazy na sousedící plošky</li>
+								<li>Čtyři odkazy na přilehlé plošky</li>
+							</ul>
+							<li>Ploška obsahuje pouze odkaz na jednu ze svých hran.</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Příklad okřídlené hrany</h2>
+						<div style="width: 100%; overflow: hidden;">
+							<div style="float: left; width: 50%; padding-top: 75px;">
+								<table>
+									<tr>
+										<td>$E_{1}$</td><td></td>
+									</tr>
+									<tr>
+										<td>$V_{1}$</td><td>$V_{2}$</td>
+									</tr>
+									<tr>
+										<td>$F_{1}$</td><td>$F_{2}$</td>
+									</tr>
+									<tr>
+										<td>$E_{3}$</td><td>$E_{4}$</td>
+									</tr>
+									<tr>
+										<td>$E_{2}$</td><td>$E_{5}$</td>
+									</tr>
+								</table>
+							</div>
+							<div style="float: left; width: 50%;">
+								<img src="./img/winged_edge.png" alt="Okřídlená hrana" title="Okřídlená hrana" height="400px" />
+							</div>
+						</div>
+					</section>
+					<section>
+						<h2>Vlastnosti okřídlených hran</h2>
+						<ul>
+							<li>Lze jednoduše nalézt všechny sousední plošky</li>
+							<li>Lze jednoduše nalézt smyčku hran/plošek</li>
+							<li>Ploška nemusí být konvexní</li>
+							<li>Ploška může obsahovat díry</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Datová struktura půlhrany</h2>
+						<ul>
+							<li>Odstraňuje omezení okřídlených hran na manifoldní objekty.</li>
+							<li>Každá hrana je rozdělena na N "půlhran".</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Vlastnosti vertexů, hran, plošek a rohů plošek</h2>
+						<p>V aplikacích běžně potřebujeme ukládat společně s geometrickou a topologickou strukturou další dodatečné informace.</p>
+						<p>Způsob uložení takových dat se liší v závislosti na využití objektů.</p>
+						<p>Je možné ukládat další uživatelem definované informace.</p>
+					</section>
+					<section>
+						<h3>Vlastnosti vertexů</h3>
+						<ul>
+							<li>Váha vertexů (viz. dopředná a inverzní kinematika)</li>
+							<li>Barva vertexů</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Vlastnosti hran</h3>
+						<ul>
+							<li>Ostrost hran</li>
+							<li>UV mapování ("šev")</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Vlastnosti plošek</h3>
+						<ul>
+							<li>Typ stínování</li>
+							<li>Textura</li>
+							<li>Barva</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Vlastnosti rohů plošek</h3>
+						<ul>
+							<li>UV souřadnice</li>
+							<li>Barva</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Dělené plošky</h2>
+						<ul>
+							<li>Algoritmus, který vyhlazuje povrch tělesa s ploškovou reprezentací.</li>
+							<li>Existuje několik dělících schémat (aproximační a interpolační).</li>
+							<li>Nejčastěji se používá dělící schéma: Catmull-Clark</li>
+							<ul>
+								<li>Rekurzivní algoritmus</li>
+								<li>Generuje čtvercovou síť.</li>
+								<li>Výsledná ploch má spojitost $C^{2}$</li>
+							</ul>
+						</ul>
+					</section>
+					<section>
+						<h3>Dělící schéma Catmull-Clark</h3>
+						<p>Výsledná plocha jedné iterace je tvořena ploškovými, hranovými a vrcholovými vertexy.</p>
+						<p>Ploškový vertex $V_{F_{i}}$ je průměrem všech vertexů tvořící danou plošku $F_{i}$.</p>
+						<p>Hranový vertex se spočítá podle následujícího vztahu:</p>
+						$$
+						V_{E} = \frac{E_{1} + E_{2} + V_{F_{1} + V_{F_{2}}}}{4}
+						$$
+					</section>
+					<section>
+						<p>Vrcholový vertex se spočítá podle následujícího vztahu:</p>
+						$$
+						V_{V} = \frac{1}{N}(\frac{1}{N}\sum_{i=1}^{N}V_{F_{i}} + \frac{1}{N}\sum_{i=1}^{N}V_{E_{i}} + \frac{(N-3)}{N}V)
+						$$
+						<p>kde $V$ je půvdní vertex</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Transformace objektů</h2>
+						<p>Stejně jako v případě 2D transformací i ve 3D se transformace objektů (posun, rotace, atd.) realizují pomocí transformačních matic a homogenních souřadnic:</p>
+						$$
+						\begin{align}
+						X' &= \frac{X}{w} \\
+						Y' &= \frac{Y}{w} \\
+						Z' &= \frac{Z}{w} \\
+						\end{align}
+						$$
+					</section>
+					<section>
+						<h3>Transformační matice</h3>
+						<p>Obecná transformační matice pro 3D transformace má následující tvar:</p>
+						$$
+						\begin{bmatrix}
+						X' \\
+						Y' \\
+						Z' \\
+						w' \\
+						\end{bmatrix}
+						=
+						\begin{bmatrix}
+						m_{1,1} & m_{1,2} & m_{1,3} & m_{1,4} \\
+						m_{2,1} & m_{2,2} & m_{2,3} & m_{2,4} \\
+						m_{3,1} & m_{3,2} & m_{3,3} & m_{3,4} \\
+						m_{4,1} & m_{4,2} & m_{4,3} & m_{4,4} \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						X \\
+						Y \\
+						Z \\
+						w \\
+						\end{bmatrix}
+						$$						
+					</section>
+					<section>
+						<h3>Posun</h3>
+						<p>Posun můžeme vyjádřit vektorem posunutí $(dx, dy, dz)$ a maticovým násobením:</p>
+						$$
+						\begin{bmatrix}
+						X' \\
+						Y' \\
+						Z' \\
+						w' \\
+						\end{bmatrix}
+						=
+						\begin{bmatrix}
+						1 & 0 & 0 & dx \\
+						0 & 1 & 0 & dy \\
+						0 & 0 & 1 & dz \\
+						0 & 0 & 0 & 1 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						X \\
+						Y \\
+						Z \\
+						w \\
+						\end{bmatrix}
+						$$
+						<p class="fragment">Kontrolní otázka: Je posunutí lineární transformace?</p>
+						<p class="fragment">Nikoliv! Poloha není lineární kombinací původních souřadnic. Na posunutí můžeme pohlížet jako na zkosení ve čtyřrozměrném prostoru.</p>
+					</section>
+					<section>
+						<h3>Zvětšení/zmenšení</h3>
+						<p>Zvětšení nebo zmenšení může být ve směru os různé a je vztažené vůči počátku soustavy souřadné:</p>
+						$$
+						\begin{bmatrix}
+						X' \\
+						Y' \\
+						Z' \\
+						w' \\
+						\end{bmatrix}
+						=
+						\begin{bmatrix}
+						S_{x} & 0 & 0 & 0 \\
+						0 & S_{y} & 0 & 0 \\
+						0 & 0 & S_{z} & 0 \\
+						0 & 0 & 0     & 1 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						X \\
+						Y \\
+						Z \\
+						w \\
+						\end{bmatrix}
+						$$
+						<p class="fragment">Kontrolní otázka: Jak by vypadala transformační matice pro zrcadlení vůči rovině XZ?</p>
+						<p class="fragment">Odpověď: $S_{x} = 1, S_{y} = -1, S_{z} = 1$</p>
+					</section>
+					<section>
+						<h3>Zkosení</h3>
+						<p>Zkosení ve směru jedné osy. V tomto případě ve směru osy x</p>
+						$$
+						\begin{bmatrix}
+						X' \\
+						Y' \\
+						Z' \\
+						w' \\
+						\end{bmatrix}
+						=
+						\begin{bmatrix}
+						1 & s_{x} & 0 & 0 \\
+						0 & 1     & 0 & 0 \\
+						0 & 0     & 1 & 0 \\
+						0 & 0     & 0 & 1 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						X \\
+						Y \\
+						Z \\
+						w \\
+						\end{bmatrix}
+						$$
+					</section>
+					<section>
+						<h3>Otočení (kolem osy Z)</h3>
+						<p>Transformační matice pro otočení není tak triviální jako ve 2D. Transformace se opět provádí vůči počátku soustavy souřadné kolem osy, ale je nutné určit kolem jaké osy otočení provádíme.</p>
+						$$
+						\begin{bmatrix}
+						X' \\
+						Y' \\
+						Z' \\
+						w' \\
+						\end{bmatrix}
+						=
+						\begin{bmatrix}
+						\cos\gamma & -\sin\gamma & 0 & 0 \\
+						\sin\gamma & \cos\gamma  & 0 & 0 \\
+						0          & 0           & 1 & 0 \\
+						0          & 0           & 0 & 1 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						X \\
+						Y \\
+						Z \\
+						w \\
+						\end{bmatrix}
+						$$
+					</section>
+					<section>
+						<h3>Otočení (kolem osy X)</h3>
+						$$
+						\begin{bmatrix}
+						X' \\
+						Y' \\
+						Z' \\
+						w' \\
+						\end{bmatrix}
+						=
+						\begin{bmatrix}
+						1 & 0          & 0           & 0 \\
+						0 & \cos\alpha & -\sin\alpha & 0 \\
+						0 & \sin\alpha & \cos\alpha  & 0 \\
+						0 & 0          & 0           & 1 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						X \\
+						Y \\
+						Z \\
+						w \\
+						\end{bmatrix}
+						$$
+					</section>
+					<section>
+						<h3>Otočení (kolem osy Y)</h3>
+						$$
+						\begin{bmatrix}
+						X' \\
+						Y' \\
+						Z' \\
+						w' \\
+						\end{bmatrix}
+						=
+						\begin{bmatrix}
+						\cos\beta & 0 & -\sin\beta & 0 \\
+						0         & 1 & 0          & 0 \\
+						\sin\beta & 0 & \cos\beta  & 0 \\
+						0         & 0 & 0          & 1 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						X \\
+						Y \\
+						Z \\
+						w \\
+						\end{bmatrix}
+						$$
+					</section>
+					<section>
+						<h3>Otočení - pořadí transformací</h3>
+						<p>Je zřejmé, že pro obecné ototčení záleží na tom v jakém pořadí se jednotlivé parciální transformace otočení provádí. Tím se myslí, jestli se nejprve provede otočení vůči ose X, následně otočení vůči ose Y a nakonec vůči ose Z.</p>
+						<p>Různé aplikace i API mohou mít různé pořadí a konvence.</p>
+						<p>Z tohoto důvodu je vhodné kromě úhlů otočení $(\alpha, \beta, \gamma)$ uvádět i pořadí jednotlivých otočení, např.: XYZ, ZXY, atd.</p>
+						<p>Rotace vyjádřené pomocí úhlů a pořadí operací se také špatně skládají a interpolují.</p>
+					</section>
+					<section>
+						<h3>Otočení - Kvaterniony (Quaternions)</h3>
+						<p>Z důvodu z míňěné výše se často používá matematický aparát nazývaný kvaterniony.</p>
+						<p class="fragment">Kvaterniony trochu připomínají komplexní čísla</p>
+						<p class="fragment">Kvaternion obsahuje hned 3 "imaginární" složky:</p>
+						<div class="fragment">
+							$$
+							q = w + ix + jy + kz
+							$$
+						</div>
+						<p class="fragment">kde $w, x, y, z$ jsou reálná čísla a $i, j, k$ jsou kvaternionové jednotky.</p>
+					</section>
+					<section>
+						<h3>Kvaterniony - základní pravidla</h3>
+						<p>Kvaterniony mají definováno několik základních pravidel:</p>
+						$$
+							i^{2} = j^{2} = k^{2} = ijk = -1;
+						$$
+						$$
+							ij = -ji = k, jk = -kj = i, ki=-ik = j
+						$$
+						<p>Někdy se kvaterniony vyjadřují pomocí:</p>
+						$$
+							q = (s, \vec{v})
+						$$
+						<p>,kde $s$ je skalární část a $\vec{v}$ je vektorová část</p>
+					</section>
+					<section>
+						<h3>Sdružený kvaternion</h3>
+						<p>Ke kvaternionu $q = w + ix + jy + kz$ definujeme kvaternion sdružený:</p>
+						$$
+							q^{*} = w - ix - jy - kz
+						$$
+						<p>Velikost kvaternionu spočítáme pomocí:</p>
+						$$
+							|q| = \sqrt{w^{2} + x^{2} + y^{2} + z^{2}}
+						$$
+						<p>Kvaternion, jehož velikost je jedna se nazývá jednotkový kvaternion a platí pro něj:</p>
+						$$
+							|q| = 1; \quad q^{*}q = qq^{*} = 1
+						$$
+					</section>
+					<section>
+						<h3>Rotace vyjádřená kvaterniony</h3>
+						<p>Rotaci o úhel $\alpha$ kolem vektoru $\vec{v} = (v_{x}, v_{y}, v_{z})$ lze vyjádřit pomocí:</p>
+						$$
+							q = \cos(\alpha/2) + v_{x}\sin(\alpha/2)i + v_{y}\sin(\alpha/2)j + v_{z}\sin(\alpha/2)k
+						$$
+					</section>
+					<section>
+						<h3>Rotace pomocí kvaternionu</h3>
+						<p>Mějme bod $P = [p_{x}, p_{y}, p_{z}]$, a jeho polohový vektor $\vec{p} = (p_{x}, p_{y}, p_{z})$ můžeme chápat jako kvaternion s nulovou skalární částí. Otočení vektoru $\vec{p}$ kolem vektoru $\vec{v}$ o úhel $\alpha$ můžeme vyjádřit jako:</p>
+						$$
+							\vec{p}' = q v q^{*}
+						$$
+						<p>Další informace o kvaternionech naleznete v monografii Moderní počítačová grafika na str. 549.</p>
+					</section>
+				</section>
+<!--
+				<section>
+					<h2>Bodová reprezentace</h2>
+				</section>
+				<section>
+					<h2>Konstruktivní geometrie těles</h2>
+				</section>
+				<section>
+					<h2>Objemová reprezentace</h2>
+				</section>
+				<section>
+					<h2>Implicitní plochy</h2>
+				</section>
+				<section>
+					<h2>Algoritmus pochodujících krychlý</h2>
+				</section>
+-->
+				<section>
+					<h2>Děkuji za pozornost.</h2>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				math: {
+					mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+					//mathjax: 'plugin/mathjax/MathJax.js',
+					config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
+				},
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

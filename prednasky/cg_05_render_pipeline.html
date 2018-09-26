@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="cs">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Počítačová grafika - souborové formáty</title>
+
+		<meta name="description" content="Souborové formáty používané v počítačové grafice">
+		<meta name="author" content="Jiří Hnídek">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!-- Analytics -->
+		<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		ga('create', 'UA-52302083-5', 'auto');
+		ga('send', 'pageview');
+		</script>
+		<!-- End Analytics -->
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Zobrazování prostorových dat</h1>
+					<h3>Kurz počítačové grafiky</h3>
+					<p>
+						<small>Autor: <a href="http://jirihnidek.github.io">Jiří Hnídek</a> / <a href="mailto:jiri.hnidek@tul.cz">jiri.hnidek@tul.cz</a></small>
+					</p>
+				</section>
+				<section>
+					<h2>Zobrazení</h2>
+					<ul>
+						<li>Úkolem je převést 3D data uložená v paměti počítače na 2D rastrový obrázek, který je následně možné zobrazit.</li>
+						<li>Tento proces se nazývá rendering:</li>
+						<ul>
+							<li>Real-timové zobrazení (většinou prováděno na grafickém akcelerátoru)</li>
+							<li>Fotorealistické zobrazení</li>
+						</ul>
+					</ul>
+				</section>
+				<section>
+					<h2>Real-timové zobrazení</h2>
+					<ul>
+						<li>Používá se v interaktivních aplikacích.</li>
+						<li>Nekladou se tak vysoké požadavky na kvalitu/realističnost zobrazení.</li>
+						<li>Hlavním kritériem je dostatečná rychlost zobrazení.</li>
+					</ul>
+				</section>
+				<section>
+					<section>
+						<h2>Zobrazovací řetězec</h2>
+						<div>
+							<div class="fragment" style="background-color: #444; padding: 20px; margin: 20px; border-radius: 7px; box-shadow: 0px 0px 7px #888;">
+								<div class="fragment">Orientace podle kamery</div>
+								<div class="fragment">Ořezávání pohledovým objemem</div>
+								<div class="fragment">Promítání</div>
+								<div class="fragment">Transformace do okna obrazovky</div>
+							</div>
+							<div class="fragment" style="background-color: #444; padding: 20px; margin: 20px; border-radius: 7px; box-shadow: 0px 0px 7px #888;">
+								<div class="fragment">Lokální osvětlení</div>
+								<div class="fragment">Rasterizace</div>
+								<div class="fragment">Mapování textur</div>
+								<div class="fragment">Určení viditelnosti pixelů</div>
+							</div>
+						</div>
+					</section>
+					<section>
+						<h2>Alternativní zobrazovací řetězec</h2>
+						<div>
+							<div class="fragment" style="background-color: #444; padding: 20px; margin: 20px; border-radius: 7px; box-shadow: 0px 0px 7px #888;">
+								<div class="fragment">Orientace podle kamery</div>
+								<div class="fragment">Výběr dat pro zpracování</div>
+								<div class="fragment">Ořezávání a promítání</div>
+								<div class="fragment">Transformace do okna obrazovky</div>
+							</div>
+							<div class="fragment" style="background-color: #444; padding: 20px; margin: 20px; border-radius: 7px; box-shadow: 0px 0px 7px #888;">
+								<div class="fragment">Rasterizace</div>
+								<div class="fragment">Lokální osvětlení</div>
+								<div class="fragment">Mapování textur</div>
+								<div class="fragment">Určení viditelnosti pixelů</div>
+							</div>
+						</div>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Orientace podle kamery</h2>
+						<ul>
+							<li>Smyslem této operace je zjednodušit následující operace a to především promítání.</li>
+							<li>Všechny objekty ve scéně se transformují (posunou a otočí), aby kamera ležela v počátku soustavy souřadné a směřovala ve směru osy $-Z$. Orientace ostatních objektů vůči kameře musí zůstat zachována.</li>
+							<li>Tento krok zobrazovacího řetězce spočívá v nalezení transformační matice $T_{cam}$ převádějící bod z WCS (World Coordinate System) do VCS (View Coordinate System) a aplikování této matice na všechny vertexy ve scéně.</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Transformační matice - odvození</h3>
+						<p>Definujeme polohu kamery: $K = [k_{x}, k_{y}, K_{z}]$ a bod na který se kamera dívá: $C = [c_{x}, c_{y}, c_{z}]$</p>
+						<p>Tyto dva body určují směr pozorování: $\vec{l} = C - K = (l_{x}, l_{y}, l_{z})$.</p>
+						<p>Dále musí mít kamera určený směr vzhůru: $\vec{u} = (u_{x}, u_{y}, u_{z})$ a vektor ukazující směrem doprava:</p>
+						$$
+							\vec{p} = \vec{l} \times \vec{u} = (p_{x}, p_{y}, p_{z})
+						$$
+					</section>
+					<section>
+						<h3>Transformace vektorů</h3>
+						<p>Při aplikování transformační matice na vektory kamery musí platit následující vztahy</p>
+					</section>
+					<section>
+						$$
+						\begin{bmatrix}
+						0  \\
+						0  \\
+						-1 \\
+						0  \\
+						\end{bmatrix}
+						= T_{cam}
+						\begin{bmatrix}
+						l_{x} \\
+						l_{y} \\
+						l_{z} \\
+						0     \\
+						\end{bmatrix}
+						\quad
+						\begin{bmatrix}
+						0 \\
+						1 \\
+						0 \\
+						0 \\
+						\end{bmatrix}
+						= T_{cam}
+						\begin{bmatrix}
+						h_{x} \\
+						h_{y} \\
+						h_{z} \\
+						0     \\
+						\end{bmatrix}
+						$$
+						<p></p>
+						$$
+						\begin{bmatrix}
+						1 \\
+						0 \\
+						0 \\
+						0 \\
+						\end{bmatrix}
+						= T_{cam}
+						\begin{bmatrix}
+						p_{x} \\
+						p_{y} \\
+						p_{z} \\
+						0     \\
+						\end{bmatrix}
+						$$
+					</section>
+					<section>
+						<p>Předchozí tři vztahy můžeme přepsat do následující matice:</p>
+						$$
+						\begin{bmatrix}
+						1 & 0 & 0 & 0 \\
+						0 & 1 & 0 & 0 \\
+						0 & 0 & 1 & 0 \\
+						0 & 0 & 0 & 1 \\
+						\end{bmatrix}
+						= T_{cam}
+						\begin{bmatrix}
+						p_{x} & h_{x} & -l_{x} & 0 \\
+						p_{y} & h_{y} & -l_{y} & 0 \\
+						p_{z} & h_{z} & -l_{z} & 0 \\
+						0     & 0     & 0      & 1 \\
+						\end{bmatrix}
+						= T_{cam} M_{cam}
+						$$
+						<p>Ze vztahu je zřejmé, že $T_{cam} = M_{cam}^{-1}$ a jelikož je matice $T_{cam}$ <a hraf="https://cs.wikipedia.org/wiki/Ortogon%C3%A1ln%C3%AD_matice">ortonormální</a>, tak řešení inverzní matice se zjednoduší na $T_{cam} = M_{cam}^{T}$</p>
+					</section>
+					<section>
+						<h3>Transformační matice</h3>
+						<p>Výsledný vztah transformační matice má následující vztah:</p>
+						$$
+						T_{cam} =
+						\begin{bmatrix}
+						 p_{x} &  p_{y} &  p_{z} & 0 \\
+						 h_{x} &  h_{y} &  h_{z} & 0 \\
+						-l_{x} & -l_{y} & -l_{z} & 0 \\
+						 0     &  0     &  0     & 1 \\
+						\end{bmatrix}
+						$$
+					</section>
+				</section>
+				<section>
+					<h2>Ořezávání pohledovým objemem</h2>
+					<p>Z promítání jsou vyřazeny plošky, které nebudou promítnuty na průmětnu, protože jsou mimo pohledový řetězec.</p>
+				</section>
+				<section>
+					<section>
+						<h2>Promítání</h2>
+						<p>Body z 3D prostoru jsou touto transformací přeneseny na stínítko. V praxi se používají dva způsoby promítání:</p>
+						<ul>
+							<li>Rovinné</li>
+							<li>Perspektivní</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Matice rovinného promítání</h3>
+						<p>Matice rovinného promítání na stínítko kamery ležící s rovinou $XY$ rovnoběžně ve vzdálenosti $z_{0}$:</p>
+						$$
+							T_{XY} = 
+							\begin{bmatrix}
+							 1 &  0 &  0 & 0 \\
+							 0 &  1 &  0 & 0 \\
+							 0 &  0 &  0 & z_{0} \\
+							 0 &  0 &  0 & 1 \\
+							\end{bmatrix}
+						$$
+					</section>
+					<section>
+						<h3>Matice perspektivního promítání</h3>
+						<p>Perspektivní promítání více připomíná způsob jakým vnímáme okolní reálný svět.</p>
+						<p>Matice perspektivního promítání na stínítko kamery ležící s rovinou $XY$ rovnoběžně ve vzdálenosti $z_{0}$:</p>
+						$$
+							T_{persp} = 
+							\begin{bmatrix}
+							 1 &  0 &  0 & 0 \\
+							 0 &  1 &  0 & 0 \\
+							 0 &  0 &  1 & 0 \\
+							 0 &  0 &  1/z_{0} & 0 \\
+							\end{bmatrix}
+						$$
+					</section>
+				</section>
+				<section>
+					<h2>Osvětlovací model</h2>
+					<ul>
+						<li>Určení osvětlení pomocí zvoleného osvětlovacího modelu</li>
+						<li>Například Phongovým osvětlovacím modelem:</li>
+						<!--
+						$$
+							I_{v} = I_{a}r_{a} + \sum_{k=1}^{M}
+						$$
+						-->
+					</ul>
+				</section>
+				<section>
+					<h2>Rasterizace</h2>
+					<ul>
+						<li>Převod z vektorové grafiky do rastrové.</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Mapování textur</h2>
+					<ul>
+						<li>Pro mapování textur se používá převážně UV mapování.</li>
+						<li>Každému rohu plošky je přiřazena UV (2D) souřadnice, která provádí mapování obrázku z jeho souřadného systému.</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Určení viditelnosti pixelů</h2>
+					<ul>
+						<li>Pro určování viditelnosti fragmentů se používá tzv. Z-buffer</li>
+						<li>Každý fragment si kromě své barvy (v barevném bufferu) uchovává svoji vzdálenost od stínítka.</li>
+						<li>Nejbližší fragment přepíší ty více vzdálené.</li>
+					</ul>
+				</section>
+<!--
+				<section>
+					<h2>Stíny</h2>
+				</section>
+-->
+				<section>
+					<h2>Děkuji za pozornost.</h2>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				math: {
+					mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+					//mathjax: 'plugin/mathjax/MathJax.js',
+					config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
+				},
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

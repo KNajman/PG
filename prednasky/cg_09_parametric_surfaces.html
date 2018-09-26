@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="cs">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Počítačová grafika - parametrické plochy</title>
+
+		<meta name="description" content="Parametrické plochy">
+		<meta name="author" content="Jiří Hnídek">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!-- Analytics -->
+		<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		ga('create', 'UA-52302083-5', 'auto');
+		ga('send', 'pageview');
+		</script>
+		<!-- End Analytics -->
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Parametrické plochy</h1>
+					<h3>Kurz počítačové grafiky</h3>
+					<p>
+						<small>Autor: <a href="http://jirihnidek.github.io">Jiří Hnídek</a> / <a href="mailto:jiri.hnidek@tul.cz">jiri.hnidek@tul.cz</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>Motivace aneb využití parametrických ploch</h2>
+					<ul>
+						<li>CAD/CAM aplikace</li>
+						<li>Grafický design</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Bodová rovnice parametrických ploch</h2>
+					<p>U plochy máme dva nezávislé parametry $ u,v \in <0, 1>$, které definují bodovou rovnici:</p>
+					$$
+					Q(u,v) = [x(u,v), y(u,v), z(u,v)]
+					$$
+					<p>funkce $x(u,v), y(u,v), z(u,v)$ jsou většinou polynomiální.</p>
+				</section>
+				<section>
+					<section>
+						<h2>Tečné vektory parametrických ploch</h2>
+						<p>Každá parametrická plocha má definované dva tečné vektory:</p>
+						$$
+						\begin{align}
+						\vec{q}_{u}(u,v) &= \frac{\partial Q(u,v)}{\partial u} =
+											\left( \frac{\partial x(u,v)}{\partial u}, \frac{\partial y(u,v)}{\partial u}, \frac{\partial z(u,v)}{\partial u} \right) \\
+						\vec{q}_{v}(u,v) &= \frac{\partial Q(u,v)}{\partial v} =
+											\left( \frac{\partial x(u,v)}{\partial v}, \frac{\partial y(u,v)}{\partial v}, \frac{\partial z(u,v)}{\partial v} \right) 
+						\end{align}
+						$$
+					</section>
+					<section>
+						<h2>Normálový vektor</h2>
+						<p>Normálový vektor je následně určený:</p>
+						$$
+						\vec{n} = \frac{\vec{q}_{u} \times \vec{q}_{v}}{\left| \vec{q}_{u} \times \vec{q}_{v} \right|}
+						$$
+						<p class="fragment">
+							Otázka: Je vždy normálový vektor definovaný pro každý bod parametrické plochy?
+						</p>
+						<p class="fragment">
+							Odpověď: Nemusí tomu tak být vždy. Pokud jsou vektory $\vec{q}_{u}$, $\vec{q}_{v}$ v nějakém bodě plochy kolineární, tak zde není normálový vektor definován.
+						</p>
+					</section>
+				</section>
+				<section>
+					<h2>Hlavní křivky plochy</h2>
+					<p>Hlavní křivkou plochy $Q(u, v)$ ve směru $u$ se rozumí, taková křivka, kde je parametr $v$ roven nějaké konstantě $k$, která může být rovna hodnotě v rozsahu $<0, 1>$.</p>
+					<p>Analogicky je definovaná hlavní křivka plochy $Q(u,v)$ ve směru $v$.</p>
+				</section>
+				<section>
+					<h2>Pláty neboli patche</h2>
+					<p>Stejně jako je výhodné navazovat kubiky, tak je výhodné vytvářet výslednou plochu z jednoduchých plátů neboli patchů. Při navazování plátů je důležitá jejich spojitost.</p>
+				</section>
+				<section>
+					<h2>Navazování a spojitost plátů</h2>
+					<p>U ploch je podobně jako u křivek definovan parametrická (C) a geometrická (G) spojitost.</p>
+					<p>Plochy musí mít společnou stranu, která je minimálně křivkou třídy $C^{0}$.</p>
+					<p>Obecně lze říci, že spojité navazování parametrických ploch je problematické, protože pri interaktivním návrhu plochy trpí ztuhlostí.</p>
+				</section>
+				<section>
+					<h2>Interpolační a aproximační plochy</h2>
+					<p>Interpolarční plochy se téměř nepoužívají, protože interolace v dimenzích vyšších než dvě je komplikovaná.</p>
+					<p>Nejčastěji se používají aproximační plochy, kdy bázové funkce jsou polynomy stupně tři. Tím se rozumí, že hlavní křivky jsou kubiky.</p>
+				</section>
+				<section>
+					<section>
+						<h2>Bikubické plochy</h2>
+						<p>Teoreticky můžeme vytvořit plochu, kde hlavní křivky v jednom směru jsou úsečky a druhém směru polynomiální křivky.</p>
+						<p>Nejčastěji se ovšem používají plochy, kde hlavní křivky jsou polynomiální křivky stupně tři (kubiky).</p>
+					</section>
+					<section>
+						<h2>Obecné vyjádření bikubické plochy</h2>
+						<p>Podobně jako u parametrických křivek se nepožívá vyjádření pomocí koeficientů jednotlivých polynomů, ale požívá se maticové vyjádření:</p>
+						$$
+						Q(u,v) = U M_{B} P M_{B}^{T} V^{T} = \begin{bmatrix} u^{3} & u^{2} & u & 1 \end{bmatrix} M_{B} P M_{B}^{T} \begin{bmatrix} v^{3} \\ v^{2} \\ v \\ 1 \end{bmatrix} 
+						$$
+						<p>$M_{B}$ je bázová matice a $P$ je vektor řídících bodů/vektorů</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Bézierovy plochy</h2>
+						<p>Hodně rozšířené parametrické plochy.</p>
+						<p>Používají pouze řídící body a procházejí některými řídícími body.</p>
+					</section>
+					<section>
+						<h2>Obecná Bézierova plocha</h2>
+						$$
+						Q(u,v) = \sum_{i=0}^{n} \sum_{j=0}^{m} P_{i,j} B_{i}^{n}(u) B_{j}^{m}(v)
+						$$
+						<p>Je dána $(n + 1).(m + 1)$ řídícími body $P_{i,j}$ a Bernstainovými polynomy: $B_{i}^{n}$ $B_{j}^{m}$</p>
+					</section>
+					<section>
+						<h2>Vlastnosti Bézierových ploch</h2>
+						<ul style="padding-bottom: 30px;">
+							<li>Strany Bézierovy plochy jsou Bézierovy křivky.</li>
+							<li>Plocha leží uvnitř konvexní obálky řídících bodů.</li>
+							<li>Změnou jednoho řídícího bodu dojde ke změně celé plochy. Proto se používá navazování plátů nízkého řádu (nejčastěji bikubické Bézierovy pláty)</li>
+							<li>Plocha prochází krajními řídícími body:</li>
+						</ul>
+						$$
+						\begin{align}
+						P_{0,0} &= Q(0,0), P_{0,m} = Q(0,1) \\
+						P_{n,0} &= Q(1,0), P_{n,m} = Q(1,1) \\
+						\end{align}
+						$$
+					</section>
+					<section>
+						<h2>Navazování Bézierových plátů</h2>
+						<ul>
+							<li>Máme-li dva Bézierovy pláty: $Q^{(1)}(u,v)$ s řídícími body: $P^{(1)}_{i,j}, i=0, \dots ,s; j=0, \dots, m$ a $Q^{(2)}(u,v)$ s řídícími body: $P^{(2)}_{i,j}, i=0, \dots ,t; j=0, \dots, m$</li>
+							<li>Ve směru kolmém na směr navazování musí mít oba pláty stejný stupeň, aby bylo možné vždy zaručit spojitost alespoň $C^{0}$</li>
+							<li>Pokud navazujeme dva pláty ve směru $u$, tak musí platit rovnost: $Q^{(1)}(1,v) = Q^{(2)}(0, v)$</li>
+							<li>Tudíž musí platit i: $P^{(1)}_{s,0} = P^{(2)}_{0,0}, \dots, P^{(1)}_{s,m} = P^{(2)}_{0,m}$</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Spojité navázání Bézierových plátů</h2>
+						<ul>
+							<li>Při spojitém navázání plátů nám nestačí rovnost společných hran.</li>
+							<li>Musí být spojité i hlavní křivky ve směru návázání.</li>
+							<li>Pokud jsou všechny hlavní křivky ve směru navázání $C^{1}$ spojité, tak i oba pláty jsou $C^{1}$ spojité.</li>
+							<li>Stejné pravidlo platí pro geometrickou spojitost.</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Bézierovy bikubické plochy</h2>
+						$$
+						Q(u,v) = \sum_{i=0}^{3} \sum_{j=0}^{3} P_{i,j} B_{i}^{3}(u) B_{j}^{3}(v)
+						$$
+						<p>Bikubická ploch je dána pouze 16-ti řídícími body. Maticový zápis:</p>
+						$$
+						Q(u,v) = U M_{B} P M_{B}^{T} V^{T}
+						$$
+						<p>pak můžeme rozepsat do tvaru:</p>
+					</section>
+					<section>
+						$$
+						\begin{align}
+						Q(u,v) =
+						&
+						\begin{bmatrix}
+						u^{3} & u^{2} & u & 1 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						-1 &  3 & -3 & 1 \\
+						 3 & -6 &  3 & 0 \\
+						-3 &  3 &  0 & 0 \\
+						 1 &  0 &  0 & 0 \\
+						\end{bmatrix}
+						\\
+						&
+						\begin{bmatrix}
+						P_{0,0} & P_{0,1} & P_{0,2} & P_{0,3} \\
+						P_{1,0} & P_{1,1} & P_{1,2} & P_{1,3} \\
+						P_{2,0} & P_{2,1} & P_{2,2} & P_{2,3} \\
+						P_{3,0} & P_{3,1} & P_{3,2} & P_{3,3} \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						-1 &  3 & -3 & 1 \\
+						 3 & -6 &  3 & 0 \\
+						-3 &  3 &  0 & 0 \\
+						 1 &  0 &  0 & 0 \\
+						\end{bmatrix}
+						\begin{bmatrix}
+						v^{3} \\
+						v^{2} \\
+						v \\
+						1 \\
+						\end{bmatrix}
+						\end{align}
+						$$
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>B-spline plochy</h2>
+						<ul>
+							<li>Parametrické plochy, kde hlavní křivky v obou směrech u a v jsou B-Spline křivky.</li>
+							<li>Navazují se snadněji než Bézierovy plochy</li>
+							<li>B-spline plocha n-tého stupně zaručuje spojitost $C^{n-1}$ bez nutnosti zadávat geometrických podmínek na řídíci body.</li>
+							<li>B-spline pláty</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Další vlastnosti B-spline ploch</h3>
+						<ul>
+							<li>Plocha leží v konvexní obálce řídích bodů</li>
+							<li>Změn polohy řídícího bodu ovlivňuje pouze okolní povrh</li>
+							<li>Násobnost bodů: plocha pak prochází danými řídícím body</li>
+							<li>Plocha je invariantní k lineárním transformacím.</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Bikubické B-spline plochy</h3>
+						<p>Bikubická B-spline plocha je dána předpisem:</p>
+						$$
+						Q(u, v) = \sum_{i=0}^{3}\sum_{j=0}^{3}P_{i,j}B_{i}(u)B_{j}(v)
+						$$
+						<p>kde $B_{i}$ a $B_{j}$ jsou bázové funkce.</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>NURBs plochy</h2>
+						<p>NURBs plochy jsou zobecněním B-spline ploch, kde body na povrchu jsou vyjádřeny pomocí:</p>
+						$$
+						Q(u, v) = 
+						\frac{\sum_{i=0}^{n}\sum_{j=0}^{m} w_{i,j} P_{i,j} N_{i,p}(u) N_{j,q}(v)}
+						{\sum_{i=0}{n}\sum_{j=0}^{m} w_{i,j} N_{i,p}(u) N_{j,q}(v)}
+						$$
+						<p>kde $w_{i,j}$ je váha řídícího bodu $P_{i,j}$. $p$ a $q$ jsou stupně polynomů a $N_{i,p}(u), N_{i,q}(v)$ jsou normalizované B-spline bázové funkce</p>
+					</section>
+					<section>
+						<h3>Normalizované bázové funkce</h3>
+						<p>Jsou definované následujícím rekurentním vztahem:</p>
+						$$
+						N_{i,1} =
+						\begin{cases}
+						1; &\quad t_{i} \leq t \le t_{i+1} \\
+						0; &\quad \text{otherwise}
+						\end{cases}
+						$$
+						$$
+						N_{i,k} =
+						\frac{t - t_{i}}{t_{i+k-1} - t_{i}}N_{i,k-1}(t) +
+						\frac{t_{i+k} - t}{t_{i+k} - t_{i+1}}N_{i+1,k-1}(t)
+						$$
+						<p>Předchozí vztah platí pro:</p>
+						$$
+						t_{i} \le t_{i+1+k}; 0 \leq i \leq n
+						$$
+						<p>Pokud se ve jmenovateli vyskytuje nula, tak výsledná hodnota je v tomto případě rovna nule.</p>
+					</section>
+				</section>
+				<section>
+					<h2>Parametrické plochy a web</h2>
+					<p>Je nutná podpora knihoven třetích stran</p>
+					<a href="http://verbnurbs.com/">http://verbnurbs.com/</a>
+				</section>
+				<section>
+					<h2>Děkuji za pozornost</h2>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				math: {
+					mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+					//mathjax: 'plugin/mathjax/MathJax.js',
+					config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
+				},
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
