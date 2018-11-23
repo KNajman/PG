@@ -7,7 +7,7 @@
 		<title>Počítačová grafika - parametrické plochy</title>
 
 		<meta name="description" content="Parametrické plochy">
-		<meta name="author" content="Jiří Hnídek">
+		<meta name="author" content="Jiří Hnídek, Petr Ječmen">
 
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -56,6 +56,7 @@
 					<h3>Kurz počítačové grafiky</h3>
 					<p>
 						<small>Autor: <a href="http://jirihnidek.github.io">Jiří Hnídek</a> / <a href="mailto:jiri.hnidek@tul.cz">jiri.hnidek@tul.cz</a></small>
+						<br/><small>Autor: Petr Ječmen / <a href="mailto:petr.jecmen@tul.cz">petr.jecmen@tul.cz</a></small>
 					</p>
 				</section>
 
@@ -83,7 +84,7 @@
 						\vec{q}_{u}(u,v) &= \frac{\partial Q(u,v)}{\partial u} =
 											\left( \frac{\partial x(u,v)}{\partial u}, \frac{\partial y(u,v)}{\partial u}, \frac{\partial z(u,v)}{\partial u} \right) \\
 						\vec{q}_{v}(u,v) &= \frac{\partial Q(u,v)}{\partial v} =
-											\left( \frac{\partial x(u,v)}{\partial v}, \frac{\partial y(u,v)}{\partial v}, \frac{\partial z(u,v)}{\partial v} \right) 
+											\left( \frac{\partial x(u,v)}{\partial v}, \frac{\partial y(u,v)}{\partial v}, \frac{\partial z(u,v)}{\partial v} \right)
 						\end{align}
 						$$
 					</section>
@@ -131,7 +132,7 @@
 						<h2>Obecné vyjádření bikubické plochy</h2>
 						<p>Podobně jako u parametrických křivek se nepožívá vyjádření pomocí koeficientů jednotlivých polynomů, ale požívá se maticové vyjádření:</p>
 						$$
-						Q(u,v) = U M_{B} P M_{B}^{T} V^{T} = \begin{bmatrix} u^{3} & u^{2} & u & 1 \end{bmatrix} M_{B} P M_{B}^{T} \begin{bmatrix} v^{3} \\ v^{2} \\ v \\ 1 \end{bmatrix} 
+						Q(u,v) = U M_{B} P M_{B}^{T} V^{T} = \begin{bmatrix} u^{3} & u^{2} & u & 1 \end{bmatrix} M_{B} P M_{B}^{T} \begin{bmatrix} v^{3} \\ v^{2} \\ v \\ 1 \end{bmatrix}
 						$$
 						<p>$M_{B}$ je bázová matice a $P$ je vektor řídících bodů/vektorů</p>
 					</section>
@@ -266,7 +267,7 @@
 						<h2>NURBs plochy</h2>
 						<p>NURBs plochy jsou zobecněním B-spline ploch, kde body na povrchu jsou vyjádřeny pomocí:</p>
 						$$
-						Q(u, v) = 
+						Q(u, v) =
 						\frac{\sum_{i=0}^{n}\sum_{j=0}^{m} w_{i,j} P_{i,j} N_{i,p}(u) N_{j,q}(v)}
 						{\sum_{i=0}{n}\sum_{j=0}^{m} w_{i,j} N_{i,p}(u) N_{j,q}(v)}
 						$$

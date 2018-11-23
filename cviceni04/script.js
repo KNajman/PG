@@ -6,7 +6,7 @@ window.onload = function() {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, vertexShaderCode);
 	gl.compileShader(vertexShader);
-	
+
 	// Create fragment shader
 	var fragmentShaderCode = document.querySelector("#fs").textContent;
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
