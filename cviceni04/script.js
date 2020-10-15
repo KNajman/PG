@@ -1,179 +1,83 @@
-window.onload = function() {
-	var gl = document.getElementById("webgl_canvas").getContext("experimental-webgl");
+// Callback function called, when file is "opened"
+function handleFileSelect(item) {
+	var files = item.files;
 
-	// Create vertex shader
-	var vertexShaderCode = document.querySelector("#vs").textContent;
-	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	gl.shaderSource(vertexShader, vertexShaderCode);
-	gl.compileShader(vertexShader);
+	console.log(files);
 
-	// Create fragment shader
-	var fragmentShaderCode = document.querySelector("#fs").textContent;
-	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	gl.shaderSource(fragmentShader, fragmentShaderCode);
-	gl.compileShader(fragmentShader);
+	for (var i = 0; i < files.length; i++) {
+		console.log(files[i], files[i].name, files[i].size, files[i].type);
 
-	// Create program
-	var program = gl.createProgram();
-	gl.attachShader(program, vertexShader);
-	gl.attachShader(program, fragmentShader);
-	gl.linkProgram(program);
-	gl.useProgram(program);
+		// Only process image files.
+		if (!files[i].type.match('image.*')) {
+			continue;
+		}
 
-	// Create buffer for positions of vertices
-	var posLoc = gl.getAttribLocation(program, "pos");
-	gl.enableVertexAttribArray(posLoc);
-	var posBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-	// We need many vertices, because each vertex need
-	// own value of UV
-	var vertices = [
-		// Bottom face
-		-1.0, -1.0, -1.0,	// 0
-		 1.0, -1.0, -1.0,	// 1
-		 1.0,  1.0, -1.0,	// 2
-		-1.0,  1.0, -1.0,	// 3
-		// Left face
-		-1.0, -1.0, -1.0,	// 4
-		 1.0, -1.0, -1.0,	// 5
-		 1.0, -1.0,  1.0,	// 6
-		-1.0, -1.0,  1.0,	// 7
-		// Front face
-		 1.0, -1.0, -1.0,	// 8
-		 1.0,  1.0, -1.0,	// 9
-		 1.0,  1.0,  1.0,	// 10
-		 1.0, -1.0,  1.0,	// 11
-		// Right face
-		 1.0,  1.0, -1.0,	// 12
-		-1.0,  1.0, -1.0,	// 13
-		-1.0,  1.0,  1.0,	// 14
-		 1.0,  1.0,  1.0,	// 15
-		// Back face
-		-1.0, -1.0, -1.0,	// 16
-		-1.0, -1.0,  1.0,	// 17
-		-1.0,  1.0,  1.0,	// 18
-		-1.0,  1.0, -1.0,	// 19
-		// Top face
-		-1.0, -1.0,  1.0,	// 20
-		 1.0, -1.0,  1.0,	// 21
-		 1.0,  1.0,  1.0,	// 22
-		-1.0,  1.0,  1.0	// 23
-	];
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
+		var reader = new FileReader();
 
-	// Create buffer for UV coordinates
-	var uvLoc = gl.getAttribLocation(program, "uv");
-	gl.enableVertexAttribArray(uvLoc);
-	var uvBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
-	uvs = [
-		// Bottom face
-		 0.0,  0.0,
-		 1.0,  0.0,
-		 1.0,  1.0,
-		 0.0,  1.0,
-		// Left face
-		 0.0,  0.0,
-		 1.0,  0.0,
-		 1.0,  1.0,
-		 0.0,  1.0,
-		// Front
-		 0.0,  0.0,
-		 1.0,  0.0,
-		 1.0,  1.0,
-		 0.0,  1.0,
-		// Right face
-		 0.0,  0.0,
-		 1.0,  0.0,
-		 1.0,  1.0,
-		 0.0,  1.0,
-		// Back face
-		 0.0,  0.0,
-		 1.0,  0.0,
-		 1.0,  1.0,
-		 0.0,  1.0,
-		// Top face
-		 0.0,  0.0,
-		 1.0,  0.0,
-		 1.0,  1.0,
-		 0.0,  1.0
-	];
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 0, 0);
+		// Closure for loading image to memory
+		reader.onload = (function(file) {
+			return function(evt) {
 
-	// Create index buffer
-	var indexBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-	var indices = [
-		 0,  1,  2,	// 0
-		 0,  2,  3,
-		 4,  5,  6,	// 1
-		 4,  6,  7,
-		 8,  9, 10,	// 2
-		 8, 10, 11,
-		12, 13, 14,	// 3
-		12, 14, 15,
-		16, 17, 18,	// 4
-		16, 18, 19,
-		20, 21, 22,	// 5
-		20, 22, 23
-	];
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), gl.STATIC_DRAW);
+				var srcImg = new Image();
+				srcImg.src = evt.target.result;
 
-	// Create and load image used as texture
-	var image = new Image();
-	image.src = "./wood_texture_simple.png";
-	image.onload = function() {
-		var texture = gl.createTexture();
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-		gl.generateMipmap(gl.TEXTURE_2D);
+				srcImg.onload = function() {
+					var srcCanvas = document.getElementById("src");
+					var srcContext = srcCanvas.getContext("2d");
+					var histCanvas = document.getElementById("histogram");
+					var histContext = histCanvas.getContext("2d");
+					
+					// Change size of canvas
+					srcCanvas.height = histCanvas.height = srcImg.height;
+					srcCanvas.width = histCanvas.width = srcImg.width;
 
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-		var samplerLoc = gl.getUniformLocation(program, "sampler");
-		gl.uniform1i(samplerLoc, 0);
+					srcContext.drawImage(srcImg, 0, 0);
+
+					var canvasHeight = srcCanvas.height;
+					var canvasWidth = srcCanvas.width;
+					var srcImageData = srcContext.getImageData(0, 0, canvasWidth, canvasHeight);
+
+					var histHeight = histCanvas.height;
+					var histWidth = histCanvas.width;
+					var histImageData = histContext.getImageData(0, 0, histWidth, histHeight);
+
+					convertImageData(srcImageData, histImageData);
+
+					histContext.putImageData(histImageData, 0, 0);
+				}
+			}
+		})(files[i]);
+
+		reader.readAsDataURL(files[i]);
+
+		break;
 	};
+};
 
-	// Create matrix for model
-	var modelMatrix = mat4.create();
-	mat4.scale(modelMatrix, modelMatrix, vec3.fromValues(0.8, 0.8, 0.8));
-	var modelLocation = gl.getUniformLocation(program, "modelMatrix");
-	gl.uniformMatrix4fv(modelLocation, false, modelMatrix);
 
-	// Create matrix for view
-	var viewMatrix = mat4.create();
-	mat4.translate(viewMatrix, viewMatrix, vec3.fromValues(0, 0, -5));
-	var viewLocation = gl.getUniformLocation(program, "viewMatrix");
-	gl.uniformMatrix4fv(viewLocation, false, viewMatrix);
+// Function for converting raw data of image
+function convertImageData(srcImageData, histImageData) {
+	var srcData = srcImageData.data;
+	var histData = histImageData.data;
 
-	// Create matrix for projection
-	var projMatrix = mat4.create();
-	mat4.perspective(projMatrix, Math.PI/3, 1, 0.1, 100);
-	var projLocation = gl.getUniformLocation(program, "projMatrix");
-	gl.uniformMatrix4fv(projLocation, false, projMatrix);
+	// Go through the image using x,y coordinates
+	var red, green, blue, gray;
+	for (var pixelIndex = 0; pixelIndex < srcData.length; pixelIndex += 4) {
+		red   = srcData[pixelIndex + 0];
+		green = srcData[pixelIndex + 1];
+		blue  = srcData[pixelIndex + 2];
+		alpha = srcData[pixelIndex + 3];
 
-	// Enable Z-buffer test
-	gl.enable(gl.DEPTH_TEST);
+		if (pixelIndex < 100) {
+			console.log(red, green, blue, alpha);
+		}
 
-	// Create polyfill to make it working in the most modern browsers
-	window.requestAnimationFrame = window.requestAnimationFrame
-		|| window.mozRequestAnimationFrame
-		|| window.webkitRequestAnimationFrame
-		|| function(cb) { setTimeout(cb, 1000/60); };
+		// Do magic at this place :-)
 
-	var render = function() {
-		mat4.rotateX(modelMatrix, modelMatrix, 0.01);
-		mat4.rotateY(modelMatrix, modelMatrix, 0.03);
-		gl.uniformMatrix4fv(modelLocation, false, modelMatrix);
+		histData[pixelIndex + 0] = 255 - red;
+		histData[pixelIndex + 1] = 255 - green;
+		histData[pixelIndex + 2] = 255 - blue;
+		histData[pixelIndex + 3] = alpha;
+	}	
+};
 
-		gl.clear(gl.COLOR_BUFFER_BIT, gl.DEPTH_BUFFER_BIT);
-		gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_BYTE, 0);
-		requestAnimationFrame(render);
-	}
-
-	render();
-}
