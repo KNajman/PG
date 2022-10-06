@@ -1,80 +1,187 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<meta charset="UTF-8"/>
-	<title>RGB to Grayscale</title>
+    <meta charset="UTF-8" />
+    <title>PG cv1</title>
 </head>
+
 <body>
+    <canvas id="src" width="512" height="512"></canvas>
+    <canvas id="grey1" width="512" height="512"></canvas>
+    <canvas id="grey2" width="512" height="512"></canvas>
+    <canvas id="rgba" width="512" height="512"></canvas>
+    <canvas id="cmyk" width="512" height="512"></canvas>
 
-<canvas id="src" width="512" height="512"></canvas>
-<canvas id="dst" width="512" height="512"></canvas>
+    <script type="text/javascript">
+        window.onload = function() {
 
-<script type="text/javascript">
-	window.onload = function() {
+            /* Load source image */
+            var srcCanvas = document.getElementById("src");
+            var srcContext = srcCanvas.getContext("2d");
+            var srcImg = new Image();
+            srcImg.src = "./lena.png";
 
-		/* Load source image */
-		var srcCanvas = document.getElementById("src");
-		var srcContext = srcCanvas.getContext("2d");
-		var srcImg = new Image();
-		srcImg.src = "./lena.png";
+            srcImg.onload = function() {
+                srcContext.drawImage(srcImg, 0, 0);
 
-		srcImg.onload = function () {
-			srcContext.drawImage(srcImg, 0, 0);
+                var imgHeight = srcImg.height;
+                var imgWidth = srcImg.width;
 
-			var imgHeight = srcImg.height;
-			var imgWidth = srcImg.width;
+                var srcImageData = srcContext.getImageData(0, 0, imgWidth, imgHeight);
+                var srcData = srcImageData.data;
 
-			var srcImageData = srcContext.getImageData(0, 0, imgWidth, imgHeight);
-			var srcData = srcImageData.data;
 
-			var dstCanvas = document.getElementById("dst");
-			var dstContext = dstCanvas.getContext("2d");
-			var dstImg = dstContext.getImageData(0, 0, imgWidth, imgHeight);
-			var dstData = dstImg.data;
 
-			console.log('experiment');
+                /* Grey scale 1 */
+                var grey1Canvas = document.getElementById("grey1");
+                var grey1Context = grey1Canvas.getContext("2d");
+                var grey1ImageData = grey1Context.createImageData(imgWidth, imgHeight);
+                var grey1Data = grey1ImageData.data;
 
-			// // Go through image data
-			// for (var i = 0; i < srcData.length; i += 4) {
-			// 	var red = srcData[i];
-			// 	var green = srcData[i + 1];
-			// 	var blue = srcData[i + 2];
-			// 	var alpha = srcData[i + 3];
+                for (var i = 0; i < srcData.length; i += 4) {
+                    var grey = (srcData[i] + srcData[i + 1] + srcData[i + 2]) / 3;
+                    grey1Data[i] = grey;
+                    grey1Data[i + 1] = grey;
+                    grey1Data[i + 2] = grey;
+                    grey1Data[i + 3] = 255;
+                }
 
-			// 	// Do magic at this place :-)
+                grey1Context.putImageData(grey1ImageData, 0, 0);
 
-			// 	dstData[i] = 255 - red;
-			// 	dstData[i + 1] = 255 - green;
-			// 	dstData[i + 2] = 255 - blue;
-			// 	dstData[i + 3] = alpha;
-			// };
+                /* Grey scale 2 */
+                var grey2Canvas = document.getElementById("grey2");
+                var grey2Context = grey2Canvas.getContext("2d");
+                var grey2ImageData = grey2Context.createImageData(imgWidth, imgHeight);
+                var grey2Data = grey2ImageData.data;
 
-			// Go through the image using x,y coordinates
-			for(var y = 0; y < imgHeight; y++) {
-				for(var x = 0; x < imgWidth; x++) {
+                for (var i = 0; i < srcData.length; i += 4) {
+                    var grey = 0.2126 * srcData[i] + 0.7152 * srcData[i + 1] + 0.0722 * srcData[i + 2];
+                    grey2Data[i] = grey;
+                    grey2Data[i + 1] = grey;
+                    grey2Data[i + 2] = grey;
+                    grey2Data[i + 3] = 255;
+                }
 
-					var red = srcData[((imgWidth * y) + x) * 4];
-					var green = srcData[((imgWidth * y) + x) * 4 + 1];
-					var blue = srcData[((imgWidth * y) + x) * 4 + 2];
-					var alpha = srcData[((imgWidth * y) + x) * 4 + 3];
+                grey2Context.putImageData(grey2ImageData, 0, 0);
 
-					if (y < 8 && x < 8) {
-						console.log(x, y, red, green, blue);
-					}
+                /* RGBA */
+                var rgbaCanvas = document.getElementById("rgba");
+                var rgbaContext = rgbaCanvas.getContext("2d");
+                rgbaContext.drawImage(src, 0, 0, imgWidth / 2, imgHeight / 2);
+                var rgbaImageData = rgbaContext.getImageData(0, 0, imgWidth / 2, imgHeight / 2);
+                var rgbaData = rgbaImageData.data;
 
-					// Do magic at this place :-)
+                var tmpData = rgbaData.slice();
 
-					dstData[((imgWidth * y) + x) * 4] = 255 - red;
-					dstData[((imgWidth * y) + x) * 4 + 1] = 255 - green;
-					dstData[((imgWidth * y) + x) * 4 + 2] = 255 - blue;
-					dstData[((imgWidth * y) + x) * 4 + 3] = alpha;
-				}
-			}
+                /*red*/
+                for (var i = 0; i < rgbaData.length; i += 4) {
+                    rgbaData[i] = tmpData[i];
+                    rgbaData[i + 1] = tmpData[i + 1] * 0;
+                    rgbaData[i + 2] = tmpData[i + 2] * 0;
+                    rgbaData[i + 3] = tmpData[i + 3];
+                }
 
-			dstContext.putImageData(dstImg, 0, 0);
-		}
-	}
-</script>
+                rgbaContext.putImageData(rgbaImageData, 0, 0, 0, 0, imgWidth / 2, imgHeight / 2);
+
+                /*green*/
+                for (var i = 0; i < rgbaData.length; i += 4) {
+                    rgbaData[i] = tmpData[i] * 0;
+                    rgbaData[i + 1] = tmpData[i + 1];
+                    rgbaData[i + 2] = tmpData[i + 2] * 0;
+                    rgbaData[i + 3] = tmpData[i + 3];
+                }
+
+                rgbaContext.putImageData(rgbaImageData, 0, imgWidth / 2, 0, 0, imgWidth / 2, imgHeight / 2);
+
+                /*blue*/
+                for (var i = 0; i < rgbaData.length; i += 4) {
+                    rgbaData[i] = tmpData[i] * 0;
+                    rgbaData[i + 1] = tmpData[i + 1] * 0;
+                    rgbaData[i + 2] = tmpData[i + 2];
+                    rgbaData[i + 3] = tmpData[i + 3];
+                }
+
+                rgbaContext.putImageData(rgbaImageData, imgWidth / 2, 0, 0, 0, imgWidth / 2, imgHeight / 2);
+
+                /*alpha*/
+                for (var i = 0; i < rgbaData.length; i += 4) {
+                    //var grey = 0.2126 * tmpData[i] + 0.7152 * tmpData[i + 1] + 0.0722 * tmpData[i + 2];
+                    var grey = (tmpData[i] + tmpData[i + 1] + tmpData[i + 2]) / 3;
+                    rgbaData[i] = grey;
+                    rgbaData[i + 1] = grey;
+                    rgbaData[i + 2] = grey;
+                    rgbaData[i + 3] = tmpData[i + 3];
+                }
+
+                rgbaContext.putImageData(rgbaImageData, imgWidth / 2, imgWidth / 2, 0, 0, imgWidth / 2, imgHeight / 2);
+
+                /* CMYK */
+                var cmykCanvas = document.getElementById("cmyk");
+                var cmykContext = cmykCanvas.getContext("2d");
+                cmykContext.drawImage(src, 0, 0, imgWidth / 2, imgHeight / 2);
+                var cmykImageData = cmykContext.getImageData(0, 0, imgWidth / 2, imgHeight / 2);
+                var cmykData = cmykImageData.data;
+
+                /*cyan*/
+                for (var i = 0; i < cmykData.length; i += 4) {
+                    var c = 1 - (tmpData[i] / 255);
+                    var m = 1 - (tmpData[i + 1] / 255);
+                    var y = 1 - (tmpData[i + 2] / 255);
+                    var k = Math.min(c, m, y);
+                    cmykData[i] = (c - k) / (1 - k);
+                    cmykData[i + 1] = 255;
+                    cmykData[i + 2] = 255;
+                    cmykData[i + 3] = k * 255;
+                }
+
+                cmykContext.putImageData(cmykImageData, 0, 0, 0, 0, imgWidth / 2, imgHeight / 2);
+
+                /*magenta*/
+                for (var i = 0; i < cmykData.length; i += 4) {
+                    var c = 1 - (tmpData[i] / 255);
+                    var m = 1 - (tmpData[i + 1] / 255);
+                    var y = 1 - (tmpData[i + 2] / 255);
+                    var k = Math.min(c, m, y);
+                    cmykData[i] = 255;
+                    cmykData[i + 1] = (m - k) / (1 - k);
+                    cmykData[i + 2] = 255;
+                    cmykData[i + 3] = k * 255;
+                }
+
+                cmykContext.putImageData(cmykImageData, 0, imgWidth / 2, 0, 0, imgWidth / 2, imgHeight / 2);
+
+                /*yellow*/
+                for (var i = 0; i < cmykData.length; i += 4) {
+                    var c = 1 - (tmpData[i] / 255);
+                    var m = 1 - (tmpData[i + 1] / 255);
+                    var y = 1 - (tmpData[i + 2] / 255);
+                    var k = Math.min(c, m, y);
+                    cmykData[i] = 255;
+                    cmykData[i + 1] = 255;
+                    cmykData[i + 2] = (y - k) / (1 - k);
+                    cmykData[i + 3] = k * 255;
+                }
+
+                cmykContext.putImageData(cmykImageData, imgWidth / 2, 0, 0, 0, imgWidth / 2, imgHeight / 2);
+                /*black*/
+                for (var i = 0; i < cmykData.length; i += 4) {
+                    var c = 1 - (tmpData[i] / 255);
+                    var m = 1 - (tmpData[i + 1] / 255);
+                    var y = 1 - (tmpData[i + 2] / 255);
+                    var k = Math.min(c, m, y);
+                    cmykData[i] = 0;
+                    cmykData[i + 1] = 0;
+                    cmykData[i + 2] = 0;
+                    cmykData[i + 3] = k * 255;
+                }
+
+                cmykContext.putImageData(cmykImageData, imgWidth / 2, imgWidth / 2, 0, 0, imgWidth / 2, imgHeight / 2);
+
+            }
+        }
+    </script>
 
 </body>
+
 </html>
