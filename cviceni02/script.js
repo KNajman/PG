@@ -93,40 +93,48 @@ function convertImageData(imgData) {
                 [10, 6, 9, 5]
             ];
 
+
             // Dithering
             var ditheringValue = ditheringMatrix[x % 4][y % 4];
             var k = 16;
             var V_in = rawData[pixelIndex + 0];
-            var V_out = 0;
+            var V_out;
 
             if (rawData[pixelIndex] > k * ditheringValue) {
-                rawData[pixelIndex] = 255;
-                rawData[pixelIndex + 1] = 255;
-                rawData[pixelIndex + 2] = 255;
                 V_out = 255;
+                rawData[pixelIndex] = V_out;
+                rawData[pixelIndex + 1] = V_out;
+                rawData[pixelIndex + 2] = V_out;
             } else {
-                rawData[pixelIndex] = 0;
-                rawData[pixelIndex + 1] = 0;
-                rawData[pixelIndex + 2] = 0;
                 V_out = 0;
+                rawData[pixelIndex] = V_out;
+                rawData[pixelIndex + 1] = V_out;
+                rawData[pixelIndex + 2] = V_out;
             }
 
-            // Floyd-Steinberg dithering
             var error = V_in - V_out;
 
-            if (x < imgData.width - 1) {
-                rawData[(y * imgData.width + (x + 1)) * 4] += (7 / 16) * error;
-            }
-            if (x > 0 && y < imgData.height - 1) {
-                rawData[((y + 1) * imgData.width + (x - 1)) * 4] += (3 / 16) * error;
-            }
-            if (y < imgData.height - 1) {
-                rawData[((y + 1) * imgData.width + x) * 4] += (5 / 16) * error;
-            }
-            if (x < imgData.width - 1 && y < imgData.height - 1) {
-                rawData[((y + 1) * imgData.width + (x + 1)) * 4] += (1 / 16) * error;
-            }
+            // Error diffusion
+            var errorIndex = ((imgData.width * y) + (x + 1)) * 4;
+            var errorIndex2 = ((imgData.width * (y + 1)) + (x - 1)) * 4;
+            var errorIndex3 = ((imgData.width * (y + 1)) + x) * 4;
+            var errorIndex4 = ((imgData.width * (y + 1)) + (x + 1)) * 4;
 
+            rawData[errorIndex + 0] += ((7 / 16) * error);
+            rawData[errorIndex + 1] += ((7 / 16) * error);
+            rawData[errorIndex + 2] += ((7 / 16) * error);
+
+            rawData[errorIndex2 + 0] += ((3 / 16) * error);
+            rawData[errorIndex2 + 1] += ((3 / 16) * error);
+
+            rawData[errorIndex3 + 0] += ((5 / 16) * error);
+            rawData[errorIndex3 + 1] += ((5 / 16) * error);
+            rawData[errorIndex3 + 2] += ((5 / 16) * error);
+
+            rawData[errorIndex4 + 0] += ((1 / 16) * error);
+            rawData[errorIndex4 + 1] += ((1 / 16) * error);
+            rawData[errorIndex4 + 2] += ((1 / 16) * error);
         }
     }
+
 }

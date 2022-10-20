@@ -49,6 +49,16 @@ function handleFileSelect(item, elementName) {
     };
 };
 
+//HEX to RGB
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
 
 // Callback function called, when clicked at Convert button
 function convertImage() {
@@ -74,20 +84,39 @@ function convertImageData(personImageData, backgroundImageData, logoImageData, r
     var logoData = logoImageData.data;
     var resultData = resultImageData.data;
 
-    // Go through the image using x,y coordinates
-    var red, green, blue, alpha;
+    var hex_colors = document.getElementById("colorpicker").value;
+    console.log(redMin);
+
+    var redMin = hexToRgb(hex_colors).r;
+    var redMax = 255;
+    var greenMin = hexToRgb(hex_colors).g;
+    var greenMax = 255;
+    var blueMin = hexToRgb(hex_colors).b;
+    var blueMax = 255;
+
     for (var pixelIndex = 0; pixelIndex < personData.length; pixelIndex += 4) {
-        red = (personData[pixelIndex + 0] + backgroundData[pixelIndex + 0] + logoData[pixelIndex + 0]) / 3;
-        green = (personData[pixelIndex + 1] + backgroundData[pixelIndex + 1] + logoData[pixelIndex + 1]) / 3;
-        blue = (personData[pixelIndex + 2] + backgroundData[pixelIndex + 2] + logoData[pixelIndex + 2]) / 3;
-        alpha = (personData[pixelIndex + 3] + backgroundData[pixelIndex + 3] + logoData[pixelIndex + 3]) / 3;
 
-        // Do magic at this place
-        //console.log(red, green, blue, alpha);
+        // BACKGROUND
+        if ((personData[pixelIndex] >= redMin && personData[pixelIndex] <= redMax) &&
+            (personData[pixelIndex + 1] >= greenMin && personData[pixelIndex + 1] <= greenMax) &&
+            (personData[pixelIndex + 2] >= blueMin && personData[pixelIndex + 2] <= blueMax)) {
+            resultData[pixelIndex + 0] = (backgroundData[pixelIndex + 0]);
+            resultData[pixelIndex + 1] = (backgroundData[pixelIndex + 1]);
+            resultData[pixelIndex + 2] = (backgroundData[pixelIndex + 2]);
+            resultData[pixelIndex + 3] = (backgroundData[pixelIndex + 3]);
+        } else {
+            resultData[pixelIndex + 0] = (personData[pixelIndex + 0]);
+            resultData[pixelIndex + 1] = (personData[pixelIndex + 1]);
+            resultData[pixelIndex + 2] = (personData[pixelIndex + 2]);
+            resultData[pixelIndex + 3] = (personData[pixelIndex + 3]);
+        }
 
-        resultData[pixelIndex + 0] = red;
-        resultData[pixelIndex + 1] = green;
-        resultData[pixelIndex + 2] = blue;
-        resultData[pixelIndex + 3] = alpha;
+        // LOGO
+        var grey = logoData[pixelIndex] * 0.299 + logoData[pixelIndex + 1] * 0.587 + logoData[pixelIndex + 2] * 0.144;
+        if (logoData[pixelIndex + 3] > 0) {
+            resultData[pixelIndex + 0] = grey + 255;
+            resultData[pixelIndex + 1] = grey + 255;
+            resultData[pixelIndex + 2] = grey + 255;
+        }
     }
 }
