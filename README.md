@@ -1,2 +1,2 @@
-Zdrojové kódy pro předmět Počítačová grafika
+Vypracovaná cvičení z předmětu Počítačová grafika
 ============================================
