@@ -26,14 +26,11 @@ window.onload = function() {
     // Create buffer for position of vertices
     var posBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-    // We need many vertices, because each vertex need
-    // own value of normal and UV
 
-    //parametry "kulatosti"
-    var n = 100;
-    var m = 100;
+    var n = 200;
+    var m = 200;
     //velikost planety
-    var radius = 2.5;
+    var radius = 2.0;
 
     var vertex = [];
     var data = [];
@@ -45,7 +42,6 @@ window.onload = function() {
         var cosTheta = Math.cos(theta);
 
         for (var k = 0; k <= m; k++) {
-
             var phi = k * 2 * Math.PI / m;
             var sinPhi = Math.sin(phi);
             var cosPhi = Math.cos(phi);
@@ -53,36 +49,34 @@ window.onload = function() {
             var x = cosPhi * sinTheta;
             var y = cosTheta;
             var z = sinPhi * sinTheta;
-            var u = 1 - (k / m);
-            var v = 1 - (i / n);
-
-            data.push(x);
-            data.push(y);
-            data.push(z);
-
-            textCoord.push(u);
-            textCoord.push(v);
 
             vertex.push(radius * x);
             vertex.push(radius * y);
             vertex.push(radius * z);
+
+            textCoord.push(1 - (k / m));
+            textCoord.push((i / m));
+
+            data.push(x + 0.5);
+            data.push(y + 0.5);
+            data.push(z + 0.5);
         }
+
     }
 
     var indexData = [];
     for (var i = 0; i < n; i++) {
         for (var k = 0; k < m; k++) {
+            var first = (i * (m + 1)) + k;
+            var second = first + m + 1;
 
-            var val1 = i * (m + 1) + k;
-            var val2 = val1 + m + 1;
+            indexData.push(first);
+            indexData.push(second);
+            indexData.push(first + 1);
 
-            indexData.push(val1);
-            indexData.push(val2);
-            indexData.push(val1 + 1);
-
-            indexData.push(val2);
-            indexData.push(val2 + 1);
-            indexData.push(val1 + 1);
+            indexData.push(second);
+            indexData.push(second + 1);
+            indexData.push(first + 1);
         }
     }
 
@@ -132,7 +126,7 @@ window.onload = function() {
 
     // Create matrix for model
     var modelMatrix = mat4.create();
-    mat4.scale(modelMatrix, modelMatrix, vec3.fromValues(0.8, 0.8, 0.8));
+    mat4.scale(modelMatrix, modelMatrix, vec3.fromValues(1, 1, 1));
     var modelLocation = gl.getUniformLocation(program, "modelMatrix");
     gl.uniformMatrix4fv(modelLocation, false, modelMatrix);
 
@@ -159,8 +153,8 @@ window.onload = function() {
 
     // Create polyfill to make it working in the most modern browsers
     window.requestAnimationFrame = window.requestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
+        window.requestAnimationFrame ||
+        window.requestAnimationFrame ||
 
         function(cb) { setTimeout(cb, 1000 / 60); };
 
