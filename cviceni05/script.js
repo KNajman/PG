@@ -69,35 +69,35 @@ window.onload = function() {
     gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
     uvs = [
         // Right face
-        0.5, 0.5,
-        0.25, 0.5,
-        0.25, 0.25,
-        0.5, 0.25,
-        // Bottom face
-        0.75, 0.25,
-        0.75, 0.0,
-        0.5, 0.0,
-        0.5, 0.25,
-        // Front face
-        0.5, 0.25,
-        0.75, 0.25,
-        0.75, 0.5,
-        0.5, 0.5,
-        // Top face
-        0.75, 0.75,
-        0.75, 0.5,
-        0.5, 0.5,
-        0.5, 0.75,
-        // Back face
-        0.25, 0.25,
-        0.0, 0.25,
-        0.0, 0.5,
-        0.25, 0.5,
-        // Left face
-        0.75, 0.5,
-        1.0, 0.5,
-        1.0, 0.25,
-        0.75, 0.25
+        0.5,   0.5,
+        0.25,  0.5,
+        0.25,  0.25,
+		0.5,   0.25,
+		// Bottom face
+        0.75,  0.25,
+        0.75,  0.0,
+        0.5,   0.0,
+        0.5,   0.25,
+		// Front face
+        0.50,  0.25,
+        0.75,  0.25,
+        0.75,  0.5,
+		0.5,   0.5,
+		// Top face
+        0.75,  0.75,
+        0.75,  0.5,
+        0.5,   0.5,
+		0.5,   0.75,
+		// Back face
+		0.25,  0.25,
+		0.0,   0.25,
+		0.0,   0.5,
+		0.25,  0.5,
+		// Left face
+		0.75,  0.5,
+		1.0,   0.5,
+		1.0,   0.25,
+		0.75,  0.25
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
     gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 0, 0);
@@ -124,7 +124,6 @@ window.onload = function() {
     // Create and load image used as texture
     var image = new Image();
     image.src = "./wood_texture_cube_logos.png";
-    // image.src = "./wood_texture_simple.png";
     image.onload = function() {
         var texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);

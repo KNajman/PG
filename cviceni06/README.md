@@ -1,8 +1,8 @@
-Cviceni 04
+# Cviceni 05
+
 ----------
 
 This example draws animated cube using WebGL. Texture is mapped on the object using UV mapping.
-
 
 This example require [glMatrix](http://glmatrix.net/) library. You can install
 it using e.g.: `npm`:
